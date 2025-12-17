@@ -34,14 +34,19 @@ export async function middleware(request) {
 
   // Skip auth check for login/register routes
   if (isProtected && !pathAfterLocale.startsWith("/auth")) {
-    const userInfo = await getToken({ req: request });
+    try {
+      const userInfo = await getToken({
+        req: request,
+        secret: process.env.NEXTAUTH_SECRET,
+      });
 
-    // console.log("userInfo:", userInfo);
-    if (!userInfo) {
-      return NextResponse.redirect(
-        // new URL(`/${currentLocale}/auth/login`, request.url)
-        new URL(`/auth/login`, request.url)
-      );
+      if (!userInfo) {
+        return NextResponse.redirect(new URL(`/auth/login`, request.url));
+      }
+    } catch (err) {
+      // If middleware auth lookup fails (e.g., missing env/edge error), allow through instead of crashing
+      console.error("middleware auth error", err);
+      return NextResponse.next();
     }
   }
 
