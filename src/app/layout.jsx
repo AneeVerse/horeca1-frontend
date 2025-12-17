@@ -25,12 +25,13 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const { globalSetting } = await getGlobalSetting();
-  const { storeSetting } = await getStoreSetting();
-
-  // Fetch all customization data at once (adjust your API to return full data)
-  const { storeCustomizationSetting, error } =
-    await getStoreCustomizationSetting();
+  // Fetch settings with fallback to null if they fail
+  const { globalSetting } = await getGlobalSetting().catch(() => ({ globalSetting: null }));
+  const { storeSetting } = await getStoreSetting().catch(() => ({ storeSetting: null }));
+  const { storeCustomizationSetting, error } = await getStoreCustomizationSetting().catch(() => ({ 
+    storeCustomizationSetting: null, 
+    error: 'Settings unavailable' 
+  }));
 
   return (
     <html lang="en" className="" suppressHydrationWarning>

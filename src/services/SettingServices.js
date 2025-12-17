@@ -2,32 +2,43 @@ import { baseURL, handleResponse } from "@services/CommonService";
 
 const getStoreCustomizationSetting = async () => {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+    
     const response = await fetch(`${baseURL}/setting/store/customization`, {
-      // cache: "force-cache", //if you want to no cache then comment this line, this setup will only re-call the api on hard reload after first call
+      signal: controller.signal,
       next: { revalidate: 900 }, // revalidate every 15 minutes
     });
 
+    clearTimeout(timeoutId);
     const storeCustomizationSetting = await handleResponse(response);
-    // await new Promise((resolve) => setTimeout(resolve, 15000));
     return { storeCustomizationSetting };
   } catch (error) {
-    // console.log("error", error);
-    return { error: error.message };
+    if (error.name === 'AbortError') {
+      return { error: 'Request timeout - settings unavailable' };
+    }
+    return { error: error.message || 'Failed to fetch customization settings' };
   }
 };
 
 const getGlobalSetting = async () => {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+    
     const response = await fetch(`${baseURL}/setting/global`, {
-      // cache: "force-cache", //if you want to no cache then comment this line, this setup will only re-call the api on hard reload after first call
+      signal: controller.signal,
       next: { revalidate: 300 }, // revalidate every 5 minutes
     });
 
+    clearTimeout(timeoutId);
     const globalSetting = await handleResponse(response);
-
     return { globalSetting };
   } catch (error) {
-    return { error: error.message };
+    if (error.name === 'AbortError') {
+      return { error: 'Request timeout - settings unavailable' };
+    }
+    return { error: error.message || 'Failed to fetch global settings' };
   }
 };
 
@@ -47,17 +58,22 @@ const getShowingLanguage = async () => {
 
 const getStoreSetting = async () => {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+    
     const response = await fetch(`${baseURL}/setting/store-setting`, {
-      // cache: "force-cache", //if you want to no cache then comment this line, this setup will only re-call the api on hard reload after first call
+      signal: controller.signal,
       next: { revalidate: 300 }, // revalidate every 5 minutes
     });
 
+    clearTimeout(timeoutId);
     const storeSetting = await handleResponse(response);
-    // console.log("storeSetting", storeSetting);
-
     return { storeSetting };
   } catch (error) {
-    return { error: error.message };
+    if (error.name === 'AbortError') {
+      return { error: 'Request timeout - settings unavailable' };
+    }
+    return { error: error.message || 'Failed to fetch store settings' };
   }
 };
 
