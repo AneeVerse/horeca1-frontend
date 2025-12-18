@@ -21,6 +21,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Cookies from "js-cookie";
 import CloudinaryUploader from "@components/admin/CloudinaryUploader";
+import { getGlobalSetting } from "@services/SettingServices";
 
 // Helper function to extract language value from multi-language object
 const getLanguageValue = (data, fallback = "Untitled") => {
@@ -43,6 +44,7 @@ export default function ProductsPage() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [currency, setCurrency] = useState("₹");
   const [formData, setFormData] = useState({
     title: { en: "" },
     description: { en: "" },
@@ -111,9 +113,21 @@ export default function ProductsPage() {
     }
   };
 
+  const fetchCurrency = async () => {
+    try {
+      const { globalSetting } = await getGlobalSetting();
+      if (globalSetting?.default_currency) {
+        setCurrency(globalSetting.default_currency);
+      }
+    } catch (err) {
+      console.error("Failed to fetch currency:", err);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
     fetchCategories();
+    fetchCurrency();
   }, []);
 
   useEffect(() => {
@@ -495,11 +509,11 @@ export default function ProductsPage() {
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                       <div className="flex flex-col">
                         <span className="font-medium">
-                          ${product.prices?.price || product.price || "0.00"}
+                          {currency}{product.prices?.price || product.price || "0.00"}
                         </span>
                         {product.prices?.discount > 0 && (
                           <span className="text-xs text-gray-400 line-through">
-                            ${product.prices?.originalPrice || product.originalPrice || product.prices?.price || product.price}
+                            {currency}{product.prices?.originalPrice || product.originalPrice || product.prices?.price || product.price}
                           </span>
                         )}
                       </div>
