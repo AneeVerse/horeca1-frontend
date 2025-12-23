@@ -59,9 +59,9 @@ const MobileNavbar = ({ open, setOpen }) => {
                 <div className="flex px-2 lg:px-0">
                   <Link href="/" className="flex flex-shrink-0 items-center">
                     <img
-                      className="h-8 w-auto"
-                      src="/logo/logo-light.svg"
-                      alt="Kachabazar"
+                      className="h-8 w-auto filter brightness-0 invert"
+                      src="https://res.cloudinary.com/dezs8ma9n/image/upload/v1766484997/horecaLogo_hirtnv.png"
+                      alt="horeca1"
                     />
                   </Link>
                 </div>

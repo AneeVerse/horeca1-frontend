@@ -10,6 +10,26 @@ import {
 } from "@services/CustomerServices";
 import { getStoreSecretKeys } from "@services/SettingServices";
 
+// OTP Login - verify via backend token
+const verifyOTPToken = async (credentials) => {
+  // For OTP login, the token is already verified by backend
+  // We just need to return the user info
+  if (credentials.loginType === "otp" && credentials.token) {
+    return {
+      _id: credentials._id,
+      name: credentials.name || null,
+      email: credentials.email || null,
+      phone: credentials.phone,
+      address: credentials.address || null,
+      image: credentials.image || null,
+      token: credentials.token,
+      refreshToken: credentials.refreshToken,
+      expiresIn: 900, // 15 minutes (will be refreshed)
+    };
+  }
+  return null;
+};
+
 async function refreshAccessToken(token) {
   // console.log("token", token);
 
@@ -58,7 +78,33 @@ export const getDynamicAuthOptions = async () => {
       clientId: storeSetting?.facebook_id || "",
       clientSecret: storeSetting?.facebook_secret || "",
     }),
+    // OTP Login Provider (Phone-based)
     Credentials({
+      id: "otp-login",
+      name: "OTP Login",
+      credentials: {
+        loginType: { label: "Login Type", type: "text" },
+        phone: { label: "Phone", type: "text" },
+        token: { label: "Token", type: "text" },
+        refreshToken: { label: "Refresh Token", type: "text" },
+        _id: { label: "User ID", type: "text" },
+        name: { label: "Name", type: "text" },
+        email: { label: "Email", type: "text" },
+        address: { label: "Address", type: "text" },
+        image: { label: "Image", type: "text" },
+      },
+      authorize: async (credentials) => {
+        // Verify OTP token from backend
+        const user = await verifyOTPToken(credentials);
+        if (user) {
+          return user;
+        }
+        throw new Error("Invalid OTP credentials");
+      },
+    }),
+    // Email/Password Login Provider
+    Credentials({
+      id: "credentials",
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
@@ -78,7 +124,13 @@ export const getDynamicAuthOptions = async () => {
     providers,
     callbacks: {
       async signIn({ user, account }) {
-        if (account.provider !== "credentials") {
+        // Allow OTP login (already verified)
+        if (account.provider === "otp-login" || account.provider === "credentials") {
+          return true;
+        }
+        
+        // OAuth providers (Google, GitHub, Facebook)
+        if (account.provider !== "credentials" && account.provider !== "otp-login") {
           try {
             const { res, error } = await signUpWithOauthProvider(user);
 
@@ -149,7 +201,15 @@ export const getDynamicAuthOptions = async () => {
         return session;
       },
       async redirect({ url, baseUrl }) {
-        return url.startsWith(baseUrl) ? url : `${baseUrl}/user/dashboard`;
+        // If the URL starts with baseUrl, use it; otherwise go to home
+        if (url.startsWith(baseUrl)) {
+          return url;
+        }
+        // If url is a relative path, prepend baseUrl
+        if (url.startsWith("/")) {
+          return `${baseUrl}${url}`;
+        }
+        return baseUrl;
       },
     },
     secret: process.env.NEXTAUTH_SECRET,

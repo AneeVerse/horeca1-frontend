@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { CardElement } from "@stripe/react-stripe-js";
 import Link from "next/link";
 import {
@@ -8,6 +8,7 @@ import {
   IoArrowForward,
   IoBagHandle,
   IoWalletSharp,
+  IoLocationSharp,
 } from "react-icons/io5";
 import { ImCreditCard } from "react-icons/im";
 import useTranslation from "next-translate/useTranslation";
@@ -23,10 +24,14 @@ import useCheckoutSubmit from "@hooks/useCheckoutSubmit";
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import SwitchToggle from "@components/form/SwitchToggle";
+import { lookupPincode } from "@utils/pincode";
 
 const CheckoutForm = ({ shippingAddress, hasShippingAddress }) => {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
+  const [pincodeLoading, setPincodeLoading] = useState(false);
+  const [pincodeError, setPincodeError] = useState("");
+  
   useEffect(() => setMounted(true), []);
 
   const {
@@ -59,6 +64,49 @@ const CheckoutForm = ({ shippingAddress, hasShippingAddress }) => {
     handleDefaultShippingAddress,
   } = useCheckoutSubmit({ shippingAddress });
   const checkout = storeCustomization?.checkout;
+
+  // Handle PIN code lookup with react-hook-form integration
+  const handlePincodeChange = useCallback(async (e) => {
+    const pincode = e.target.value.replace(/\D/g, "");
+    if (pincode.length === 6) {
+      setPincodeLoading(true);
+      setPincodeError("");
+      
+      const result = await lookupPincode(pincode);
+      
+      if (result.success) {
+        // Use district as city for better accuracy
+        const cityValue = result.district || result.city;
+        const stateValue = result.state;
+        
+        // Use react-hook-form's setValue to update fields
+        // We need to access it from useCheckoutSubmit, but for now use DOM
+        const cityInput = document.querySelector('input[name="city"]');
+        const countryInput = document.querySelector('input[name="country"]');
+        
+        if (cityInput) {
+          cityInput.value = cityValue;
+          // Trigger react-hook-form update
+          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+          nativeInputValueSetter.call(cityInput, cityValue);
+          cityInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        if (countryInput) {
+          const stateCountry = `${stateValue}, India`;
+          countryInput.value = stateCountry;
+          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+          nativeInputValueSetter.call(countryInput, stateCountry);
+          countryInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        
+        setPincodeError("");
+      } else {
+        setPincodeError(result.error || "Invalid PIN code");
+      }
+      setPincodeLoading(false);
+    }
+  }, []);
+
   if (!mounted) return null; // or a skeleton loader
 
   return (
@@ -80,16 +128,16 @@ const CheckoutForm = ({ shippingAddress, hasShippingAddress }) => {
             )}
             <div className="form-group">
               <h2 className="font-semibold text-base text-gray-700 pb-3">
-                01. {showingTranslateValue(checkout?.personal_details)}
+                01. Contact Details
               </h2>
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6 sm:col-span-3">
                   <InputArea
                     register={register}
-                    label={showingTranslateValue(checkout?.first_name)}
+                    label="First Name"
                     name="firstName"
                     type="text"
-                    placeholder="John"
+                    placeholder="Enter first name"
                   />
                   <Error errorMessage={errors.firstName} />
                 </div>
@@ -97,102 +145,126 @@ const CheckoutForm = ({ shippingAddress, hasShippingAddress }) => {
                 <div className="col-span-6 sm:col-span-3">
                   <InputArea
                     register={register}
-                    label={showingTranslateValue(checkout?.last_name)}
+                    label="Last Name"
                     name="lastName"
                     type="text"
-                    placeholder="Doe"
+                    placeholder="Enter last name"
                   />
                   <Error errorMessage={errors.lastName} />
                 </div>
 
                 <div className="col-span-6 sm:col-span-3">
-                  <InputArea
-                    register={register}
-                    label={showingTranslateValue(checkout?.email_address)}
-                    name="email"
-                    type="email"
-                    placeholder="youremail@gmail.com"
-                  />
-                  <Error errorMessage={errors.email} />
+                  <Label label="Mobile Number" />
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <span className="text-gray-500 text-sm">+91</span>
+                    </div>
+                    <Input
+                      {...register("contact", { required: "Mobile number is required" })}
+                      type="tel"
+                      inputMode="numeric"
+                      maxLength={10}
+                      placeholder="10-digit mobile"
+                      className="py-2 pl-12 pr-4"
+                      readOnly
+                    />
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">Verified via OTP</p>
+                  <Error errorMessage={errors.contact} />
                 </div>
 
                 <div className="col-span-6 sm:col-span-3">
                   <InputArea
                     register={register}
-                    label={showingTranslateValue(checkout?.checkout_phone)}
-                    name="contact"
-                    type="tel"
-                    placeholder="+062-6532956"
+                    label="Email (Optional)"
+                    name="email"
+                    type="email"
+                    placeholder="For order updates"
                   />
-
-                  <Error errorMessage={errors.contact} />
+                  <Error errorMessage={errors.email} />
                 </div>
               </div>
             </div>
 
             <div className="form-group mt-12">
               <h2 className="font-semibold text-base text-gray-700 pb-3">
-                02. {showingTranslateValue(checkout?.shipping_details)}
+                02. Delivery Address
               </h2>
 
               <div className="grid grid-cols-6 gap-6 mb-8">
-                <div className="col-span-6">
-                  <InputArea
-                    register={register}
-                    label={showingTranslateValue(checkout?.street_address)}
-                    name="address"
-                    type="text"
-                    placeholder="123 Boulevard Rd, Beverley Hills"
-                  />
-                  <Error errorMessage={errors.address} />
+                {/* PIN Code - First for auto-fill */}
+                <div className="col-span-6 sm:col-span-2">
+                  <Label label="PIN Code" />
+                  <div className="relative">
+                    <Input
+                      {...register("zipCode", { required: "PIN Code is required" })}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={6}
+                      placeholder="Enter PIN"
+                      onChange={handlePincodeChange}
+                      className="py-2 px-4"
+                    />
+                    {pincodeLoading && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <svg className="animate-spin h-4 w-4 text-emerald-500" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  {pincodeError && <p className="text-red-500 text-xs mt-1">{pincodeError}</p>}
+                  <Error errorMessage={errors.zipCode} />
                 </div>
 
-                <div className="col-span-6 sm:col-span-6 lg:col-span-2">
+                {/* City - Auto-filled from PIN */}
+                <div className="col-span-6 sm:col-span-2">
                   <InputArea
                     register={register}
-                    label={showingTranslateValue(checkout?.city)}
+                    label="City / District"
                     name="city"
                     type="text"
-                    placeholder="Los Angeles"
+                    placeholder="Auto-filled from PIN"
                   />
                   <Error errorMessage={errors.city} />
                 </div>
 
-                <div className="col-span-6 sm:col-span-3 lg:col-span-2">
+                {/* State - Auto-filled from PIN */}
+                <div className="col-span-6 sm:col-span-2">
                   <InputArea
                     register={register}
-                    label={showingTranslateValue(checkout?.country)}
+                    label="State"
                     name="country"
                     type="text"
-                    placeholder="United States"
+                    placeholder="Auto-filled from PIN"
                   />
                   <Error errorMessage={errors.country} />
                 </div>
 
-                <div className="col-span-6 sm:col-span-3 lg:col-span-2">
+                {/* Full Address */}
+                <div className="col-span-6">
                   <InputArea
                     register={register}
-                    label={showingTranslateValue(checkout?.zip_code)}
-                    name="zipCode"
+                    label="Complete Address"
+                    name="address"
                     type="text"
-                    placeholder="2345"
+                    placeholder="House/Flat No., Building, Street, Landmark"
                   />
-                  <Error errorMessage={errors.zipCode} />
+                  <Error errorMessage={errors.address} />
                 </div>
               </div>
 
-              <Label label={showingTranslateValue(checkout?.shipping_cost)} />
+              <Label label="Delivery Option" />
               <div className="grid grid-cols-6 gap-6">
                 <div className="col-span-6 sm:col-span-3">
                   <InputShipping
                     currency={currency}
                     register={register}
                     handleShippingCost={handleShippingCost}
-                    name={showingTranslateValue(checkout?.shipping_name_two)}
-                    description={showingTranslateValue(
-                      checkout?.shipping_one_desc
-                    )}
-                    value={Number(checkout?.shipping_one_cost) || 60}
+                    name="Standard Delivery"
+                    description="3-5 business days"
+                    value={Number(checkout?.shipping_one_cost) || 40}
                   />
                   <Error errorMessage={errors.shippingOption} />
                 </div>
@@ -202,11 +274,9 @@ const CheckoutForm = ({ shippingAddress, hasShippingAddress }) => {
                     currency={currency}
                     register={register}
                     handleShippingCost={handleShippingCost}
-                    name={showingTranslateValue(checkout?.shipping_name_two)}
-                    description={showingTranslateValue(
-                      checkout?.shipping_two_desc
-                    )}
-                    value={Number(checkout?.shipping_two_cost) || 20}
+                    name="Express Delivery"
+                    description="Same day / Next day"
+                    value={Number(checkout?.shipping_two_cost) || 80}
                   />
                   <Error errorMessage={errors.shippingOption} />
                 </div>

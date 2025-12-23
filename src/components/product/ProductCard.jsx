@@ -104,11 +104,11 @@ const ProductCard = ({ product, attributes }) => {
         />
       )}
 
-      <div className="group relative flex flex-col overflow-hidden rounded-xl border bg-white border-gray-100 transition-all duration-100 ease-in-out hover:border-emerald-500 ">
+      <div className="group relative flex flex-col overflow-hidden rounded-lg sm:rounded-xl border bg-white border-gray-100 transition-all duration-100 ease-in-out hover:border-emerald-500">
         <div className="w-full flex justify-between">
           <Discount product={product} />
         </div>
-        <div className="relative w-full min-h-40 lg:h-40 xl:h-44">
+        <div className="relative w-full min-h-32 sm:min-h-40 lg:h-40 xl:h-44">
           <Link
             href={`/product/${product?.slug}`}
             className="relative block w-full h-full overflow-hidden bg-gray-100"
@@ -120,7 +120,7 @@ const ProductCard = ({ product, attributes }) => {
               src={product.image?.[0]}
             />
           </Link>
-          <div className="absolute lg:bottom-0 bottom-4 lg:group-hover:bottom-4 inset-x-1 opacity-100 flex justify-center lg:opacity-0 lg:invisible group-hover:opacity-100 group-hover:visible transition-all">
+          <div className="absolute lg:bottom-0 bottom-2 sm:bottom-4 lg:group-hover:bottom-4 inset-x-1 opacity-100 flex justify-center lg:opacity-0 lg:invisible group-hover:opacity-100 group-hover:visible transition-all">
             <button
               aria-label="quick view"
               onClick={() => {
@@ -132,22 +132,22 @@ const ProductCard = ({ product, attributes }) => {
                   )} product modal`
                 );
               }}
-              className="relative h-auto inline-flex items-center cursor-pointer justify-center rounded-full transition-colors text-xs py-2 px-4 bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-300 hover:text-emerald-500 hover:bg-gray-100 dark:hover:bg-slate-800 shadow-lg focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-emerald-600 dark:focus:ring-offset-0"
+              className="relative h-auto inline-flex items-center cursor-pointer justify-center rounded-full transition-colors text-[10px] sm:text-xs py-1 sm:py-2 px-2 sm:px-4 bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-300 hover:text-emerald-500 hover:bg-gray-100 dark:hover:bg-slate-800 shadow-lg focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-emerald-600 dark:focus:ring-offset-0"
             >
-              <IoExpand />
+              <IoExpand className="w-3 h-3 sm:w-4 sm:h-4" />
               <span className="ms-1 hidden xl:block lg:block">Quick View</span>
             </button>
           </div>
 
           {/* Cart quantity indicator on image */}
           {inCart(product._id) && (
-            <div className="absolute bottom-3 right-3 z-10">
+            <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 z-10">
               {items.map(
                 (item) =>
                   item.id === product._id && (
                     <div
                       key={item.id}
-                      className="flex flex-col w-10 h-20 items-center p-1 justify-between bg-emerald-500 text-white ring-2 ring-white rounded-full shadow-lg"
+                      className="flex flex-col w-8 h-16 sm:w-10 sm:h-20 items-center p-0.5 sm:p-1 justify-between bg-emerald-500 text-white ring-1 sm:ring-2 ring-white rounded-full shadow-lg"
                     >
                       <button
                         onClick={(e) => {
@@ -156,11 +156,11 @@ const ProductCard = ({ product, attributes }) => {
                           updateItemQuantity(item.id, item.quantity - 1);
                         }}
                       >
-                        <span className="text-lg cursor-pointer">
+                        <span className="text-sm sm:text-lg cursor-pointer">
                           <IoRemove />
                         </span>
                       </button>
-                      <p className="text-sm font-semibold">
+                      <p className="text-xs sm:text-sm font-semibold">
                         {item.quantity}
                       </p>
                       <button
@@ -172,7 +172,7 @@ const ProductCard = ({ product, attributes }) => {
                             : handleIncreaseQuantity(item);
                         }}
                       >
-                        <span className="text-lg cursor-pointer">
+                        <span className="text-sm sm:text-lg cursor-pointer">
                           <IoAdd />
                         </span>
                       </button>
@@ -184,27 +184,28 @@ const ProductCard = ({ product, attributes }) => {
         </div>
 
         {/* product info start */}
-        <div className="flex flex-1 flex-col px-3 pt-2 pb-3">
+        <div className="flex flex-1 flex-col px-2 sm:px-3 pt-1.5 sm:pt-2 pb-2 sm:pb-3">
           {/* Product Title */}
           <Link
             href={`/product/${product?.slug}`}
-            className="text-sm font-semibold text-gray-800 line-clamp-2 hover:text-emerald-600 leading-snug mb-0.5"
+            className="text-xs sm:text-sm font-semibold text-gray-800 line-clamp-2 hover:text-emerald-600 leading-tight sm:leading-snug mb-0.5"
           >
             {showingTranslateValue(product?.title)}
           </Link>
           
           {/* Unit info */}
           {product?.unit && (
-            <span className="text-xs text-gray-400 mb-1.5">1 {product.unit}</span>
+            <span className="text-[10px] sm:text-xs text-gray-400 mb-1 sm:mb-1.5">1 {product.unit}</span>
           )}
           
           {/* Bulk Pricing Display - Only show when NOT promo time */}
           {!isPromoTime && product?.bulkPricing && (product?.bulkPricing?.bulkRate1?.quantity > 0 || product?.bulkPricing?.bulkRate2?.quantity > 0) && (
-            <div className="bg-gray-50 rounded-md p-2.5 mb-2 space-y-1.5">
+            <div className="bg-gray-50 rounded-md p-1.5 sm:p-2.5 mb-1.5 sm:mb-2 space-y-1 sm:space-y-1.5">
               {product?.bulkPricing?.bulkRate1?.quantity > 0 && product?.bulkPricing?.bulkRate1?.pricePerUnit > 0 && (
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-emerald-600 font-medium">
-                    {currency}{product.bulkPricing.bulkRate1.pricePerUnit}/{product.unit || "unit"} for {product.bulkPricing.bulkRate1.quantity}+
+                <div className="flex items-center justify-between gap-1.5 sm:gap-2">
+                  <span className="text-[10px] sm:text-xs text-emerald-600 font-medium leading-tight flex-1 min-w-0">
+                    <span className="hidden sm:inline">{currency}{product.bulkPricing.bulkRate1.pricePerUnit}/{product.unit || "unit"} for {product.bulkPricing.bulkRate1.quantity}+</span>
+                    <span className="sm:hidden">{currency}{product.bulkPricing.bulkRate1.pricePerUnit}/{product.unit || "unit"}</span>
                   </span>
                   <button
                     onClick={(e) => {
@@ -222,16 +223,17 @@ const ProductCard = ({ product, attributes }) => {
                       addItem(bulkItem, bulkQuantity);
                       setCartDrawerOpen(true); // Auto-open cart drawer
                     }}
-                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors whitespace-nowrap"
+                    className="text-[10px] sm:text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors whitespace-nowrap px-1.5 py-0.5 sm:px-0 sm:py-0"
                   >
                     Add {product.bulkPricing.bulkRate1.quantity}
                   </button>
                 </div>
               )}
               {product?.bulkPricing?.bulkRate2?.quantity > 0 && product?.bulkPricing?.bulkRate2?.pricePerUnit > 0 && (
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-emerald-600 font-medium">
-                    {currency}{product.bulkPricing.bulkRate2.pricePerUnit}/{product.unit || "unit"} for {product.bulkPricing.bulkRate2.quantity}+
+                <div className="flex items-center justify-between gap-1.5 sm:gap-2">
+                  <span className="text-[10px] sm:text-xs text-emerald-600 font-medium leading-tight flex-1 min-w-0">
+                    <span className="hidden sm:inline">{currency}{product.bulkPricing.bulkRate2.pricePerUnit}/{product.unit || "unit"} for {product.bulkPricing.bulkRate2.quantity}+</span>
+                    <span className="sm:hidden">{currency}{product.bulkPricing.bulkRate2.pricePerUnit}/{product.unit || "unit"}</span>
                   </span>
                   <button
                     onClick={(e) => {
@@ -249,7 +251,7 @@ const ProductCard = ({ product, attributes }) => {
                       addItem(bulkItem, bulkQuantity);
                       setCartDrawerOpen(true); // Auto-open cart drawer
                     }}
-                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors whitespace-nowrap"
+                    className="text-[10px] sm:text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors whitespace-nowrap px-1.5 py-0.5 sm:px-0 sm:py-0"
                   >
                     Add {product.bulkPricing.bulkRate2.quantity}
                   </button>
@@ -260,11 +262,12 @@ const ProductCard = ({ product, attributes }) => {
           
           {/* Promo Bulk Pricing Display (6pm-9am) - Only show during promo time */}
           {isPromoTime && product?.promoPricing && (product?.promoPricing?.bulkRate1?.quantity > 0 || product?.promoPricing?.bulkRate2?.quantity > 0) && (
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-md p-2.5 mb-2 space-y-1.5 border border-emerald-200/50">
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-md p-1.5 sm:p-2.5 mb-1.5 sm:mb-2 space-y-1 sm:space-y-1.5 border border-emerald-200/50">
               {product?.promoPricing?.bulkRate1?.quantity > 0 && product?.promoPricing?.bulkRate1?.pricePerUnit > 0 && (
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-emerald-700 font-medium">
-                    {currency}{product.promoPricing.bulkRate1.pricePerUnit}/{product.unit || "unit"} for {product.promoPricing.bulkRate1.quantity}+
+                <div className="flex items-center justify-between gap-1.5 sm:gap-2">
+                  <span className="text-[10px] sm:text-xs text-emerald-700 font-medium leading-tight flex-1 min-w-0">
+                    <span className="hidden sm:inline">{currency}{product.promoPricing.bulkRate1.pricePerUnit}/{product.unit || "unit"} for {product.promoPricing.bulkRate1.quantity}+</span>
+                    <span className="sm:hidden">{currency}{product.promoPricing.bulkRate1.pricePerUnit}/{product.unit || "unit"}</span>
                   </span>
                   <button
                     onClick={(e) => {
@@ -283,16 +286,17 @@ const ProductCard = ({ product, attributes }) => {
                       addItem(promoItem, promoQuantity);
                       setCartDrawerOpen(true);
                     }}
-                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors whitespace-nowrap"
+                    className="text-[10px] sm:text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors whitespace-nowrap px-1.5 py-0.5 sm:px-0 sm:py-0"
                   >
                     Add {product.promoPricing.bulkRate1.quantity}
                   </button>
                 </div>
               )}
               {product?.promoPricing?.bulkRate2?.quantity > 0 && product?.promoPricing?.bulkRate2?.pricePerUnit > 0 && (
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-emerald-700 font-medium">
-                    {currency}{product.promoPricing.bulkRate2.pricePerUnit}/{product.unit || "unit"} for {product.promoPricing.bulkRate2.quantity}+
+                <div className="flex items-center justify-between gap-1.5 sm:gap-2">
+                  <span className="text-[10px] sm:text-xs text-emerald-700 font-medium leading-tight flex-1 min-w-0">
+                    <span className="hidden sm:inline">{currency}{product.promoPricing.bulkRate2.pricePerUnit}/{product.unit || "unit"} for {product.promoPricing.bulkRate2.quantity}+</span>
+                    <span className="sm:hidden">{currency}{product.promoPricing.bulkRate2.pricePerUnit}/{product.unit || "unit"}</span>
                   </span>
                   <button
                     onClick={(e) => {
@@ -311,7 +315,7 @@ const ProductCard = ({ product, attributes }) => {
                       addItem(promoItem, promoQuantity);
                       setCartDrawerOpen(true);
                     }}
-                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors whitespace-nowrap"
+                    className="text-[10px] sm:text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors whitespace-nowrap px-1.5 py-0.5 sm:px-0 sm:py-0"
                   >
                     Add {product.promoPricing.bulkRate2.quantity}
                   </button>
@@ -321,22 +325,22 @@ const ProductCard = ({ product, attributes }) => {
           )}
           
           {/* Price and Add Button Row */}
-          <div className="flex items-center justify-between mt-auto pt-1.5">
-            <div className="flex flex-col">
+          <div className="flex items-center justify-between mt-auto pt-1 sm:pt-1.5 gap-2">
+            <div className="flex flex-col min-w-0 flex-1">
               {isPromoTime && product?.promoPricing?.singleUnit > 0 ? (
                 <>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-semibold text-white bg-gradient-to-r from-emerald-500 to-teal-500 px-1.5 py-0.5 rounded shadow-sm">PROMO</span>
-                    <span className="text-base font-bold text-emerald-600">
+                  <div className="flex items-center gap-1 sm:gap-1.5">
+                    <span className="text-[9px] sm:text-xs font-semibold text-white bg-gradient-to-r from-emerald-500 to-teal-500 px-1 sm:px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap">PROMO</span>
+                    <span className="text-sm sm:text-base font-bold text-emerald-600 truncate">
                       {currency}{product.promoPricing.singleUnit}
-                      {product?.unit && <span className="text-xs font-normal text-emerald-500">/{product.unit}</span>}
+                      {product?.unit && <span className="text-[10px] sm:text-xs font-normal text-emerald-500">/{product.unit}</span>}
                     </span>
                   </div>
                 </>
               ) : (
-                <span className="text-base font-bold text-gray-900">
+                <span className="text-sm sm:text-base font-bold text-gray-900 truncate">
                   {currency}{product?.isCombination ? product?.variants[0]?.price : product?.prices?.price}
-                  {product?.unit && <span className="text-xs font-normal text-gray-400">/{product.unit}</span>}
+                  {product?.unit && <span className="text-[10px] sm:text-xs font-normal text-gray-400">/{product.unit}</span>}
                 </span>
               )}
             </div>
@@ -362,10 +366,10 @@ const ProductCard = ({ product, attributes }) => {
                   handleAddItem(product);
                 }
               }}
-              className="flex items-center gap-0.5 px-3 py-1.5 rounded-full font-semibold text-xs transition-colors border border-emerald-500 text-emerald-600 hover:bg-emerald-50"
+              className="flex items-center gap-0.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-semibold text-[10px] sm:text-xs transition-colors border border-emerald-500 text-emerald-600 hover:bg-emerald-50 flex-shrink-0"
             >
               ADD
-              <span className="text-emerald-500 text-sm leading-none">+</span>
+              <span className="text-emerald-500 text-xs sm:text-sm leading-none">+</span>
             </button>
           </div>
         </div>

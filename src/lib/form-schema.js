@@ -121,7 +121,7 @@ const checkoutFormSchema = (shippingOptions) => {
       .string()
       .min(2, { message: "Name must be at least 2 characters long." })
       .trim(),
-    email: z.string().email({ message: "Please enter a valid email." }).trim(),
+    email: z.string().email({ message: "Please enter a valid email." }).trim().optional().or(z.literal("")),
     contact: z
       .string()
       .min(10, { message: "Contact must be at least 10 characters long." })
@@ -142,12 +142,12 @@ const checkoutFormSchema = (shippingOptions) => {
       .trim(),
     zipCode: z
       .string()
-      .min(5, { message: "Zip code must be at least 5 characters long." })
-      .max(10, { message: "Zip code must be at most 10 characters long." })
-      .regex(/^\d+$/, { message: "Zip code must only contain numbers." })
+      .min(6, { message: "PIN code must be 6 digits." })
+      .max(6, { message: "PIN code must be 6 digits." })
+      .regex(/^\d{6}$/, { message: "PIN code must be 6 digits." })
       .trim(),
 
-    paymentMethod: z.enum(["Cash", "Card"], {
+    paymentMethod: z.enum(["Cash", "Card", "RazorPay"], {
       message: "Payment method is required.",
     }),
     shippingOption: z.enum(shippingOptions, {

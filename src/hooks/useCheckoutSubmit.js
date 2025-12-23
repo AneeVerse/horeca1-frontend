@@ -73,8 +73,25 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
       setDiscountPercentage(coupon.discountType);
       setMinimumAmount(coupon.minimumAmount);
     }
-    setValue("email", userInfo?.email);
-  }, [isCouponApplied]);
+    // Auto-fill user data from session
+    if (userInfo?.email) {
+      setValue("email", userInfo.email);
+    }
+    // Auto-fill phone from session (OTP login)
+    if (userInfo?.phone) {
+      // Format phone for display (remove country code for Indian numbers)
+      const phone = userInfo.phone.startsWith("91") && userInfo.phone.length > 10 
+        ? userInfo.phone.slice(2) 
+        : userInfo.phone;
+      setValue("contact", phone);
+    }
+    // Auto-fill name if available
+    if (userInfo?.name) {
+      const nameParts = userInfo.name.split(" ");
+      setValue("firstName", nameParts[0] || "");
+      setValue("lastName", nameParts.slice(1).join(" ") || "");
+    }
+  }, [isCouponApplied, userInfo]);
 
   //remove coupon if total value less then minimum amount of coupon
   useEffect(() => {

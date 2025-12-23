@@ -77,8 +77,8 @@ const PromoTimerCard = () => {
   if (isPromoTime) {
     // Show Promo Active Card - Using emerald theme to match website
     return (
-      <div className="w-full h-full">
-        <div className="bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-500 h-full rounded-xl shadow-lg overflow-hidden relative">
+      <div className="w-full h-full min-h-[300px] lg:min-h-0">
+        <div className="bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-500 h-full min-h-[300px] lg:min-h-0 rounded-xl shadow-lg overflow-hidden relative">
           {/* Subtle pattern overlay */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0" style={{
@@ -157,8 +157,8 @@ const PromoTimerCard = () => {
 
   // Show "Promo Starting Soon" Card - Subtle gray theme
   return (
-    <div className="w-full h-full">
-      <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-slate-900 h-full rounded-xl shadow-lg overflow-hidden relative">
+    <div className="w-full h-full min-h-[300px] lg:min-h-0">
+      <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-slate-900 h-full min-h-[300px] lg:min-h-0 rounded-xl shadow-lg overflow-hidden relative">
         {/* Subtle pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{

@@ -19,16 +19,28 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { signOut } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSetting } from "@context/SettingContext";
-import { getUserSession } from "@lib/auth-client";
 
 const Sidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { storeCustomization } = useSetting();
 
-  const userInfo = getUserSession();
+  // Get userInfo from cookie (primary auth method for OTP login)
+  const [userInfo, setUserInfo] = useState(null);
+  
+  useEffect(() => {
+    const userInfoCookie = Cookies.get("userInfo");
+    if (userInfoCookie) {
+      try {
+        const parsed = JSON.parse(userInfoCookie);
+        setUserInfo(parsed);
+      } catch {
+        setUserInfo(null);
+      }
+    }
+  }, []);
 
   const dashboard = storeCustomization?.dashboard;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -37,8 +49,13 @@ const Sidebar = () => {
   const handleLogOut = () => {
     signOut();
     Cookies.remove("couponInfo");
+    Cookies.remove("userInfo");
     router.push("/");
   };
+
+  // Get display name (fallback to phone if no name)
+  const displayName = userInfo?.name || (userInfo?.phone ? `+${userInfo.phone.slice(0, 2)} ${userInfo.phone.slice(-10, -5)}****` : "User");
+  const displayEmail = userInfo?.email || (userInfo?.phone ? `+${userInfo.phone.slice(0, 2)} ${userInfo.phone.slice(-4)}` : "");
 
   const userSidebar = [
     {
@@ -99,17 +116,17 @@ const Sidebar = () => {
                     alt={userInfo?.name[0]}
                   />
                 ) : (
-                  <div className="flex items-center text-xl font-semibold justify-center">
-                    {userInfo?.name?.charAt(0)}
+                  <div className="flex items-center text-xl font-semibold justify-center text-emerald-600">
+                    {displayName?.charAt(0)?.toUpperCase() || "U"}
                   </div>
                 )}
               </div>
             </div>
             <div className="ml-3">
               <h5 className="text-left text-md font-semibold leading-none text-gray-800 line-h">
-                {userInfo?.name}
+                {displayName}
               </h5>
-              <p className="text-sm text-gray-500">{userInfo?.email}</p>
+              <p className="text-sm text-gray-500">{displayEmail}</p>
             </div>
           </div>
           {isDropdownOpen ? (
@@ -164,8 +181,8 @@ const Sidebar = () => {
                       alt={userInfo?.name[0]}
                     />
                   ) : (
-                    <div className="flex items-center text-xl font-semibold justify-center">
-                      {userInfo?.name?.charAt(0)}
+                    <div className="flex items-center text-xl font-semibold justify-center text-emerald-600">
+                      {displayName?.charAt(0)?.toUpperCase() || "U"}
                     </div>
                   )}
                 </div>
@@ -174,9 +191,9 @@ const Sidebar = () => {
               <div className="ml-3">
                 <div>
                   <h5 className="text-lg text-left font-semibold leading-none text-gray-800 line-h">
-                    {userInfo?.name}
+                    {displayName}
                   </h5>
-                  <p className="text-sm text-gray-500">{userInfo?.email}</p>
+                  <p className="text-sm text-gray-500">{displayEmail}</p>
                 </div>
               </div>
             </div>

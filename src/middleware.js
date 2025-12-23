@@ -1,16 +1,9 @@
-import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 
 const locales = ["en", "en-US", "es", "fr", "nl-NL"];
-const defaultLocale = "en";
 const protectedRoutes = ["/user", "/order", "/checkout"];
 
 export async function middleware(request) {
-  // If auth secret is missing (or running in edge without access), bypass to avoid crashes
-  if (!process.env.NEXTAUTH_SECRET) {
-    return NextResponse.next();
-  }
-
   const { pathname } = request.nextUrl;
 
   // Skip internal and static assets
@@ -24,9 +17,6 @@ export async function middleware(request) {
   }
 
   const pathnameParts = pathname.split("/");
-  const currentLocale = locales.includes(pathnameParts[1])
-    ? pathnameParts[1]
-    : defaultLocale;
 
   // Build path without locale
   const pathAfterLocale = locales.includes(pathnameParts[1])
@@ -39,19 +29,27 @@ export async function middleware(request) {
 
   // Skip auth check for login/register routes
   if (isProtected && !pathAfterLocale.startsWith("/auth")) {
-    try {
-      const userInfo = await getToken({
-        req: request,
-        secret: process.env.NEXTAUTH_SECRET,
-      });
-
-      if (!userInfo) {
-        return NextResponse.redirect(new URL(`/auth/login`, request.url));
+    // Simple cookie-based auth check - userInfo cookie set by OTP login
+    const userInfoCookie = request.cookies.get("userInfo");
+    
+    // Parse and validate the cookie
+    let isAuthenticated = false;
+    if (userInfoCookie?.value) {
+      try {
+        const userInfo = JSON.parse(userInfoCookie.value);
+        // Check if userInfo has required fields (token and id/phone)
+        isAuthenticated = !!(userInfo?.token && (userInfo?.id || userInfo?._id || userInfo?.phone));
+      } catch {
+        // Invalid JSON cookie
+        isAuthenticated = false;
       }
-    } catch (err) {
-      // If middleware auth lookup fails (e.g., missing env/edge error), allow through instead of crashing
-      console.error("middleware auth error", err);
-      return NextResponse.next();
+    }
+    
+    if (!isAuthenticated) {
+      // Redirect to OTP login
+      const loginUrl = new URL(`/auth/otp-login`, request.url);
+      loginUrl.searchParams.set("redirectUrl", pathname);
+      return NextResponse.redirect(loginUrl);
     }
   }
 

@@ -39,7 +39,7 @@ const Home = async () => {
 
       <div className="bg-white dark:bg-zinc-900">
         <div className="mx-auto py-5 max-w-screen-2xl px-3 sm:px-10">
-          <div className="flex w-full">
+          <div className="flex flex-col lg:flex-row w-full gap-4 lg:gap-6">
             {/* Home page main carousel */}
             <div className="flex-shrink-0 xl:pr-6 lg:block w-full lg:w-3/5">
               <Suspense fallback={<p>Loading carousel...</p>}>
@@ -47,7 +47,7 @@ const Home = async () => {
               </Suspense>
             </div>
             {/* Coupon Offer Card */}
-            <div className="w-full hidden lg:flex ">
+            <div className="w-full lg:w-2/5 flex">
               <Suspense fallback={<p>Loading coupons...</p>}>
                 <OfferCard />
               </Suspense>
@@ -63,31 +63,8 @@ const Home = async () => {
 
       {/* feature category's */}
       {storeCustomizationSetting?.home?.featured_status && (
-        <div className="bg-gray-100 dark:bg-zinc-800 lg:py-16 py-10">
+        <div className="bg-white dark:bg-zinc-900 lg:py-10 py-6">
           <div className="mx-auto max-w-screen-2xl px-3 sm:px-10">
-            <div className="mb-10 flex justify-center">
-              <div className="text-center w-full lg:w-2/5">
-                <h2 className="text-xl lg:text-2xl mb-2 font-semibold">
-                  <CMSkeletonTwo
-                    count={1}
-                    height={30}
-                    loading={false}
-                    error={storeCustomizationError}
-                    data={storeCustomizationSetting?.home?.feature_title}
-                  />
-                </h2>
-                <p className="text-base text-gray-600 dark:text-gray-400 leading-6">
-                  <CMSkeletonTwo
-                    count={4}
-                    height={10}
-                    loading={false}
-                    error={storeCustomizationError}
-                    data={storeCustomizationSetting?.home?.feature_description}
-                  />
-                </p>
-              </div>
-            </div>
-
             <Suspense fallback={<p>Loading feature category...</p>}>
               <FeatureCategory />
             </Suspense>
