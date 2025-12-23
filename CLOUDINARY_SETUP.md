@@ -72,3 +72,4 @@ After setting up, test the image upload in the admin panel:
 - **CORS errors**: Make sure your Cloudinary account allows uploads from your domain
 - **Image not showing**: Check the browser console for errors and verify the URL format
 
+
