@@ -14,7 +14,7 @@ export const metadata = {
   keywords: ["contact", "email", "phone", "location"],
   // You can also add more advanced metadata here
   openGraph: {
-    title: "FAQ | Kachabazar",
+    title: "FAQ | Horeca1",
     description:
       "Get in touch with us! Find our contact information and fill out our contact form.",
     url: "https://kachabazar-store-nine.vercel.app/faq",
