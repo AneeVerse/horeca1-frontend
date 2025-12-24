@@ -15,14 +15,72 @@ const ProfileDropDown = () => {
   const [userInfo, setUserInfo] = useState(null);
   
   useEffect(() => {
-    const userInfoCookie = Cookies.get("userInfo");
-    if (userInfoCookie) {
-      try {
-        setUserInfo(JSON.parse(userInfoCookie));
-      } catch {
-        setUserInfo(null);
+    const loadUserInfo = async () => {
+      const userInfoCookie = Cookies.get("userInfo");
+      if (userInfoCookie) {
+        try {
+          const parsed = JSON.parse(userInfoCookie);
+          setUserInfo(parsed);
+          
+          // Fetch fresh customer data from database to get latest image
+          const customerId = parsed.id || parsed._id;
+          if (customerId) {
+            try {
+              const { baseURL } = await import("@services/CommonService");
+              const token = parsed.token;
+              
+              const response = await fetch(`${baseURL}/customer/${customerId}`, {
+                cache: "no-store",
+                headers: {
+                  "Content-Type": "application/json",
+                  ...(token && { Authorization: `Bearer ${token}` }),
+                },
+              });
+              
+              if (response.ok) {
+                const customer = await response.json();
+                
+                // Update userInfo with fresh data (prioritize image from database)
+                const freshUserInfo = {
+                  ...parsed,
+                  image: customer.image || parsed.image, // Use image from DB if available
+                  name: customer.name || parsed.name,
+                  email: customer.email || parsed.email,
+                  phone: customer.phone || parsed.phone,
+                };
+                
+                setUserInfo(freshUserInfo);
+                
+                // Update cookie with fresh data
+                Cookies.set("userInfo", JSON.stringify(freshUserInfo), { expires: 30 });
+              }
+            } catch (err) {
+              console.error("[ProfileDropDown] Failed to fetch customer data:", err);
+            }
+          }
+        } catch {
+          setUserInfo(null);
+        }
       }
-    }
+    };
+    
+    // Load initially
+    loadUserInfo();
+    
+    // Listen for custom event when profile is updated
+    const handleProfileUpdate = () => {
+      loadUserInfo();
+    };
+    
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    
+    // Also poll every 5 seconds to refresh data
+    const interval = setInterval(loadUserInfo, 5000);
+    
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+      clearInterval(interval);
+    };
   }, []);
 
   // Check if user is logged in (has email OR phone OR token)
