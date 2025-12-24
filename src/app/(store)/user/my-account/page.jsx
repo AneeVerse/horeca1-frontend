@@ -5,12 +5,32 @@ import { Plus } from "lucide-react";
 //internal imports
 
 import { getUserServerSession } from "@lib/auth-server";
-import { getShippingAddress } from "@services/CustomerServices";
+import { getShippingAddress, getCustomerById } from "@services/CustomerServices";
 
 const MyAccount = async () => {
-  const userInfo = await getUserServerSession();
+  const sessionUser = await getUserServerSession();
+  
+  // Get customer ID - check both id and _id (session might use either)
+  const customerId = sessionUser?.id || sessionUser?._id || sessionUser?.user?._id || sessionUser?.user?.id;
+  
+  // Fetch fresh customer data from database instead of relying on session
+  const { customer, error: customerError } = customerId 
+    ? await getCustomerById(customerId)
+    : { customer: null, error: null };
+  
+  // #region agent log
+  const fs = require('fs');
+  const logPath = 'c:\\Users\\Roger\\Desktop\\horeca1\\kachabazar\\.cursor\\debug.log';
+  try {
+    fs.appendFileSync(logPath, JSON.stringify({location:'my-account/page.jsx:17',message:'Fetched customer data',data:{customerId,customerName:customer?.name,customerEmail:customer?.email,customerPhone:customer?.phone,hasCustomer:!!customer},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})+'\n');
+  } catch(e) {}
+  // #endregion
+  
+  // Use customer data from database if available, otherwise fall back to session
+  const userInfo = customer || sessionUser;
+  
   const { shippingAddress, error } = await getShippingAddress({
-    id: userInfo?.id,
+    id: customerId || userInfo?.id || userInfo?._id,
   });
   // console.log("shippingAddress", shippingAddress);
 
@@ -50,10 +70,10 @@ const MyAccount = async () => {
             </div>
             <div>
               <h5 className="leading-none mb-2 text-base font-medium text-gray-700">
-                {userInfo?.name}
+                {userInfo?.name || (userInfo?.phone ? `+91 ${userInfo.phone.slice(-4).padStart(userInfo.phone.length - 4, 'X')}` : "User")}
               </h5>
-              <p className="text-sm text-gray-500">{userInfo?.email}</p>
-              <p className="text-sm text-gray-500">{userInfo?.phone}</p>
+              <p className="text-sm text-gray-500">{userInfo?.email || "N/A"}</p>
+              <p className="text-sm text-gray-500">{userInfo?.phone ? `+91 ${userInfo.phone}` : "N/A"}</p>
             </div>
           </div>
         </div>
