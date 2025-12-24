@@ -521,6 +521,12 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
           contact: orderInfo?.user_info?.contact || "0000000000",
         },
         theme: { color: "#10b981" },
+        modal: {
+          ondismiss: function () {
+            console.log("[Frontend Razorpay] Payment modal closed/cancelled");
+            setIsCheckoutSubmit(false);
+          },
+        },
       };
 
       console.log("[Frontend Razorpay] Razorpay Options:");
@@ -532,6 +538,11 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
       console.log("[Frontend Razorpay] ========== Opening Razorpay Checkout ==========");
 
       const rzpay = new Razorpay(options);
+      rzpay.on("payment.failed", function (response) {
+        console.error("[Frontend Razorpay] Payment failed:", response.error);
+        setIsCheckoutSubmit(false);
+        notifyError(response.error.description || "Payment failed");
+      });
       rzpay.open();
     } catch (err) {
       console.error("[Frontend Razorpay] ERROR:", err.message);
@@ -651,6 +662,7 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
     storeCustomization,
     showingTranslateValue,
     handleDefaultShippingAddress,
+    setValue,
   };
 };
 

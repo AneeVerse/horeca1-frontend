@@ -7,7 +7,7 @@ const getStoreCustomizationSetting = async () => {
     
     const response = await fetch(`${baseURL}/setting/store/customization`, {
       signal: controller.signal,
-      next: { revalidate: 900 }, // revalidate every 15 minutes
+      cache: "no-store", // Force fresh data - no caching
     });
     
     clearTimeout(timeoutId);

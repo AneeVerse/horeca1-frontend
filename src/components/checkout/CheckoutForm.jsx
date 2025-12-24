@@ -56,6 +56,7 @@ const CheckoutForm = ({ shippingAddress, hasShippingAddress }) => {
     storeCustomization,
     showingTranslateValue,
     handleDefaultShippingAddress,
+    setValue,
   } = useCheckoutSubmit({ shippingAddress });
   const checkout = storeCustomization?.checkout;
 
@@ -73,25 +74,9 @@ const CheckoutForm = ({ shippingAddress, hasShippingAddress }) => {
         const cityValue = result.district || result.city;
         const stateValue = result.state;
         
-        // Use react-hook-form's setValue to update fields
-        // We need to access it from useCheckoutSubmit, but for now use DOM
-        const cityInput = document.querySelector('input[name="city"]');
-        const countryInput = document.querySelector('input[name="country"]');
-        
-        if (cityInput) {
-          cityInput.value = cityValue;
-          // Trigger react-hook-form update
-          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-          nativeInputValueSetter.call(cityInput, cityValue);
-          cityInput.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-        if (countryInput) {
-          const stateCountry = `${stateValue}, India`;
-          countryInput.value = stateCountry;
-          const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-          nativeInputValueSetter.call(countryInput, stateCountry);
-          countryInput.dispatchEvent(new Event('input', { bubbles: true }));
-        }
+        // Update form fields using react-hook-form's setValue
+        setValue("city", cityValue, { shouldValidate: true, shouldDirty: true });
+        setValue("country", stateValue, { shouldValidate: true, shouldDirty: true });
         
         setPincodeError("");
       } else {
@@ -99,7 +84,7 @@ const CheckoutForm = ({ shippingAddress, hasShippingAddress }) => {
       }
       setPincodeLoading(false);
     }
-  }, []);
+  }, [setValue]);
 
   if (!mounted) return null; // or a skeleton loader
 

@@ -9,6 +9,7 @@ import {
 } from "@services/SettingServices";
 
 import { SettingProvider } from "@context/SettingContext";
+import { storeCustomization as defaultStoreCustomization } from "@utils/storeCustomizationSetting";
 
 // Force dynamic rendering to avoid long static generation during builds
 export const dynamic = "force-dynamic";
@@ -27,7 +28,21 @@ export default async function RootLayout({ children }) {
 
   const globalSetting = globalResult.globalSetting || {};
   const storeSetting = storeResult.storeSetting || {};
-  const storeCustomizationSetting = customizationResult.storeCustomizationSetting || {};
+  // Merge API response with frontend defaults, ensuring continue_button uses correct value
+  const apiCustomization = customizationResult.storeCustomizationSetting || {};
+  const storeCustomizationSetting = {
+    ...defaultStoreCustomization,
+    ...apiCustomization,
+    // Ensure checkout.continue_button always uses the correct value
+    checkout: {
+      ...defaultStoreCustomization.checkout,
+      ...apiCustomization.checkout,
+      continue_button: {
+        en: "Continue Shopping",
+        de: apiCustomization.checkout?.continue_button?.de || defaultStoreCustomization.checkout.continue_button.de,
+      },
+    },
+  };
 
   return (
     <html lang="en" className="" suppressHydrationWarning>
