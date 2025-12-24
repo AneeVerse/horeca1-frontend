@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { format } from "date-fns";
+import dayjs from "dayjs";
 import {
   EyeIcon,
   TruckIcon,
@@ -183,7 +183,7 @@ export default function OrdersPage() {
                   Order #{order.invoice}
                 </h2>
                 <p className="text-emerald-100 text-sm">
-                  {format(new Date(order.createdAt), "PPP 'at' p")}
+                  {dayjs(order.createdAt).format("MMMM Do, YYYY [at] h:mm A")}
                 </p>
               </div>
               <button
@@ -423,7 +423,7 @@ export default function OrdersPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {format(new Date(order.createdAt), "dd MMM yyyy")}
+                        {dayjs(order.createdAt).format("DD MMM YYYY")}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="text-sm font-bold text-gray-900">
