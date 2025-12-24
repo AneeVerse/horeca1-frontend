@@ -31,15 +31,72 @@ const Sidebar = () => {
   const [userInfo, setUserInfo] = useState(null);
   
   useEffect(() => {
-    const userInfoCookie = Cookies.get("userInfo");
-    if (userInfoCookie) {
-      try {
-        const parsed = JSON.parse(userInfoCookie);
-        setUserInfo(parsed);
-      } catch {
-        setUserInfo(null);
+    const loadUserInfo = async () => {
+      const userInfoCookie = Cookies.get("userInfo");
+      if (userInfoCookie) {
+        try {
+          const parsed = JSON.parse(userInfoCookie);
+          setUserInfo(parsed);
+          
+          // Fetch fresh customer data from database to get latest name/email
+          const customerId = parsed.id || parsed._id;
+          if (customerId) {
+            try {
+              const { baseURL } = await import("@services/CommonService");
+              const token = parsed.token;
+              
+              const response = await fetch(`${baseURL}/customer/${customerId}`, {
+                cache: "no-store",
+                headers: {
+                  "Content-Type": "application/json",
+                  ...(token && { Authorization: `Bearer ${token}` }),
+                },
+              });
+              
+              if (response.ok) {
+                const customer = await response.json();
+                
+                // Update userInfo with fresh data (prioritize name from database)
+                const freshUserInfo = {
+                  ...parsed,
+                  name: customer.name || parsed.name, // Use name from DB if available
+                  email: customer.email || parsed.email, // Use email from DB if available
+                  phone: customer.phone || parsed.phone,
+                };
+                
+                setUserInfo(freshUserInfo);
+                
+                // Update cookie with fresh data
+                Cookies.set("userInfo", JSON.stringify(freshUserInfo), { expires: 30 });
+              }
+            } catch (err) {
+              // If API call fails, just use cookie data
+              console.error("[Sidebar] Failed to fetch fresh customer data:", err);
+            }
+          }
+        } catch {
+          setUserInfo(null);
+        }
       }
-    }
+    };
+    
+    // Load initially
+    loadUserInfo();
+    
+    // Listen for custom event when profile is updated
+    const handleProfileUpdate = () => {
+      loadUserInfo();
+    };
+    
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    
+    // Also poll every 5 seconds to refresh data (less frequent to reduce overhead)
+    const interval = setInterval(loadUserInfo, 5000);
+    
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+      clearInterval(interval);
+    };
   }, []);
 
   const dashboard = storeCustomization?.dashboard;
