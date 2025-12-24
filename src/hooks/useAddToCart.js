@@ -25,6 +25,15 @@ const useAddToCart = () => {
     //   // item
     // );
     const { variants, categories, description, ...updatedProduct } = product;
+    
+    // Explicitly preserve product details (sku, hsn, unit, brand) for order details
+    const cartItem = {
+      ...updatedProduct,
+      sku: product.sku,
+      hsn: product.hsn,
+      unit: product.unit,
+      brand: product.brand,
+    };
 
     if (result !== undefined) {
       if (
@@ -33,7 +42,7 @@ const useAddToCart = () => {
           ? product?.variant?.quantity
           : product?.stock)
       ) {
-        addItem(updatedProduct, item);
+        addItem(cartItem, item);
         notifySuccess(`${item} ${product.title} added to cart!`);
         setCartDrawerOpen(true); // Auto-open cart drawer
       } else {
@@ -46,7 +55,7 @@ const useAddToCart = () => {
           ? product?.variant?.quantity
           : product?.stock)
       ) {
-        addItem(updatedProduct, item);
+        addItem(cartItem, item);
         notifySuccess(`${item} ${product.title} added to cart!`);
         setCartDrawerOpen(true); // Auto-open cart drawer
       } else {
