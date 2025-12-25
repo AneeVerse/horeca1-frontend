@@ -25,11 +25,12 @@ export default async function StoreLayout({ children }) {
       </main>
       <div className="w-full">
         {/* FooterTop (Daily Needs section) - Hidden per user request */}
-        <div className="hidden relative lg:block mx-auto max-w-screen-2xl py-6 px-3 sm:px-10">
+        {/* FeatureCard (Free Shipping, Support 24/7, Secure Payment, Latest Offer) - Hidden per user request */}
+        {/* <div className="hidden relative lg:block mx-auto max-w-screen-2xl py-6 px-3 sm:px-10">
           <FeatureCard
             storeCustomizationSetting={storeCustomizationSetting}
           />
-        </div>
+        </div> */}
         <hr className="hr-line"></hr>
         <div className="border-t border-gray-100 w-full">
           <Footer

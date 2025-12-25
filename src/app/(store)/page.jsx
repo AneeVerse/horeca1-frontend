@@ -13,7 +13,7 @@ import {
   getStoreCustomizationSetting,
 } from "@services/SettingServices";
 import DiscountedCard from "@components/product/DiscountedCard";
-import ProductCard from "@components/product/ProductCard";
+import PopularProductsCarousel from "@components/product/PopularProductsCarousel";
 
 const Home = async () => {
   const { attributes } = await getShowingAttributes();
@@ -67,38 +67,26 @@ const Home = async () => {
         </div>
       )}
 
-      {/* popular products - without title/description */}
+      {/* popular products - with header and carousel */}
       {storeCustomizationSetting?.home?.popular_products_status && (
         <div className="bg-gray-50 dark:bg-zinc-900 lg:py-16 py-10 mx-auto max-w-screen-2xl px-3 sm:px-10">
-          <div className="flex">
-            <div className="w-full">
-              {error ? (
-                <CMSkeletonTwo
-                  count={20}
-                  height={20}
-                  error={error}
-                  loading={false}
-                />
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 gap-3 md:gap-4 lg:gap-4">
-                  {popularProducts
-                    ?.slice(
-                      0,
-                      storeCustomizationSetting?.home
-                        ?.latest_discount_product_limit
-                    )
-                    .map((product) => (
-                      <ProductCard
-                        key={product._id}
-                        product={product}
-                        attributes={attributes}
-                        currency={currency}
-                      />
-                    ))}
-                </div>
+          {error ? (
+            <CMSkeletonTwo
+              count={20}
+              height={20}
+              error={error}
+              loading={false}
+            />
+          ) : (
+            <PopularProductsCarousel
+              products={popularProducts?.slice(
+                0,
+                storeCustomizationSetting?.home?.latest_discount_product_limit
               )}
-            </div>
-          </div>
+              attributes={attributes}
+              currency={currency}
+            />
+          )}
         </div>
       )}
 

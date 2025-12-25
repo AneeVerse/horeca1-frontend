@@ -620,6 +620,12 @@ p:not(:last-of-type) {
   margin: 0 auto;
 }
 
+/* Hide default Swiper navigation arrows for popular products carousel */
+.popular-products-carousel .swiper-button-next,
+.popular-products-carousel .swiper-button-prev {
+  display: none !important;
+}
+
 .paginationOrder ul {
   display: flex;
   align-items: center;
