@@ -1,14 +1,23 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FiPhoneCall } from "react-icons/fi";
 
 //internal imports
 import LogoutButton from "./LogoutButton";
 import { showingTranslateValue } from "@lib/translate";
 
-const TopNavbar = async ({ storeCustomization }) => {
+const TopNavbar = ({ storeCustomization }) => {
   const navbar = storeCustomization?.navbar;
-  // console.log("storeCustomization", storeCustomization);
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+
+  // Hide top navbar on home page
+  if (isHomePage) {
+    return null;
+  }
 
   return (
     <div className="hidden lg:block bg-gray-100">
