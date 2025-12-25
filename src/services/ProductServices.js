@@ -7,14 +7,8 @@ const getShowingStoreProducts = async ({
 }) => {
   try {
     // console.log("slug::", slug);
-    const apiUrl = `${baseURL}/products/store?category=${category}&title=${title}&slug=${slug}`;
-    
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ProductServices.js:12',message:'API request URL',data:{apiUrl,category,title,slug},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-    
     const response = await fetch(
-      apiUrl,
+      `${baseURL}/products/store?category=${category}&title=${title}&slug=${slug}`,
       {
         // cache: "no-cache",
         next: {
@@ -25,10 +19,6 @@ const getShowingStoreProducts = async ({
     );
 
     const products = await handleResponse(response);
-    
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ProductServices.js:30',message:'API response data',data:{productsCount:products?.products?.length||0,popularProductsCount:products?.popularProducts?.length||0,discountedProductsCount:products?.discountedProducts?.length||0},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
 
     return {
       error: null,
