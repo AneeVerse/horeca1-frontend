@@ -14,14 +14,14 @@ const CartItem = ({ item, currency }) => {
 
   return (
     <div className="group w-full h-auto flex justify-start items-center py-4 transition-all relative border-b border-gray-200 last:border-b-0">
-      <div className="relative flex overflow-hidden flex-shrink-0 cursor-pointer mr-4">
+      <div className="relative flex overflow-hidden flex-shrink-0 cursor-pointer mr-4 w-20 h-20">
         <ImageWithFallback
           img
-          width={40}
-          height={40}
+          width={80}
+          height={80}
           src={item.image}
           alt={item.title}
-          className="size-20 flex-none rounded-md bg-gray-100 object-cover"
+          className="w-full h-full flex-none rounded-md bg-gray-100 object-contain"
         />
       </div>
       <div className="flex flex-col w-full overflow-hidden">

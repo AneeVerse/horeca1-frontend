@@ -13,43 +13,67 @@ const ImageWithFallback = ({
   ...props
 }) => {
   const [imgSrc, setImgSrc] = useState(src || fallback);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
+    // Reset error state when src changes
+    setHasError(false);
     setImgSrc(src || fallback);
-  }, [src, fallback]);
+  }, [src]);
+
+  // If using regular img tag (for legacy support)
+  if (img) {
+    const { className: propClassName, style: propStyle, ...restProps } = props;
+    const mergedClassName = `transition duration-150 ease-linear ${propClassName || ""}`;
+    const mergedStyle = {
+      width: "100%",
+      height: "100%",
+      ...propStyle,
+    };
+    
+    return (
+      <img
+        src={hasError ? fallback : imgSrc}
+        onError={() => {
+          if (!hasError && imgSrc !== fallback) {
+            setHasError(true);
+            setImgSrc(fallback);
+          }
+        }}
+        alt={alt}
+        {...restProps}
+        className={mergedClassName}
+        style={mergedStyle}
+      />
+    );
+  }
+
+  // For Next.js Image component - use key to force re-render on error
+  const imageSrc = hasError || !src ? fallback : (src || fallback);
+  
+  // Extract className and style to merge properly
+  const { className: propClassName, style: propStyle, ...restProps } = props;
+  const mergedClassName = `object-contain transition duration-150 ease-linear transform group-hover:scale-105 p-2 ${propClassName || ""}`;
+  const mergedStyle = {
+    objectFit: "contain",
+    ...propStyle,
+  };
 
   return (
-    <>
-      {img ? (
-        <img
-          src={imgSrc}
-          onError={() => setImgSrc(fallback)}
-          alt={alt}
-          {...props}
-          className={`object-contain transition duration-150 ease-linear transform group-hover:scale-105 p-2 ${
-            props.className || ""
-          }`}
-          style={{
-            objectFit: "contain",
-            ...props.style,
-          }}
-        />
-      ) : (
-        <Image
-          src={imgSrc}
-          onError={() => setImgSrc(fallback)}
-          alt={alt}
-          {...props}
-          className={`object-contain transition duration-150 ease-linear transform group-hover:scale-105 p-2 ${
-            props.className || ""
-          }`}
-          style={{
-            objectFit: "contain",
-            ...props.style,
-          }}
-        />
-      )}
-    </>
+    <Image
+      key={imageSrc} // Force re-render when src changes
+      src={imageSrc}
+      alt={alt}
+      onError={() => {
+        if (!hasError && imageSrc !== fallback) {
+          setHasError(true);
+        }
+      }}
+      unoptimized={false}
+      {...restProps}
+      className={mergedClassName}
+      style={mergedStyle}
+    />
   );
 };
 

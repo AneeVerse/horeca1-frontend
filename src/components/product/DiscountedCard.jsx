@@ -65,11 +65,11 @@ const DiscountedCard = ({ product, attributes, currency }) => {
         <div className="w-full flex justify-between">
           <Discount product={product} />
         </div>
-        <div className="relative w-full min-h-48 lg:h-48 xl:h-52">
+        <div className="relative w-full h-48 lg:h-48 xl:h-52">
           <div className="relative block w-full h-full overflow-hidden bg-gray-100">
             <ImageWithFallback
               fill
-              sizes="100%"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               alt="product"
               src={product.image?.[0]}
             />
