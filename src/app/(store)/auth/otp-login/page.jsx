@@ -154,9 +154,6 @@ const OTPLogin = () => {
 
     setLoading(true);
     
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'otp-login/page.jsx:149',message:'handlePhoneSubmit called',data:{phoneLength:displayPhone.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
     const formattedPhone = formatPhoneNumber(displayPhone);
     setPhone(formattedPhone);
 
@@ -252,25 +249,13 @@ const OTPLogin = () => {
 
     setLoading(true);
     
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'otp-login/page.jsx:238',message:'handleOTPSubmit called',data:{otpLength:otp.length,hasPhone:!!phone},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
-    
     try {
       // Verify OTP with backend
       const result = await verifyOTP(phone, otp);
 
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'otp-login/page.jsx:245',message:'OTP verification result',data:{success:result.success,hasUserInfo:!!result.userInfo},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
-
       if (result.success && result.userInfo) {
         // Skip NextAuth signIn to avoid POST request loops
         // We use cookie-based auth as primary method (no NextAuth needed)
-        
-        // #region agent log
-        fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'otp-login/page.jsx:258',message:'Skipping NextAuth signIn, using cookie auth only',data:{hasToken:!!result.userInfo.token},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-        // #endregion
         
         // Use cookie-based auth as primary
         // Store in userInfo cookie for middleware auth check
@@ -415,9 +400,9 @@ const OTPLogin = () => {
               {/* Terms */}
               <p className="text-xs text-gray-400 text-center mt-6">
                 By continuing, you agree to our{" "}
-                <a href="/terms" className="text-emerald-600 hover:underline">Terms of Service</a>
+                <a href="/terms-and-conditions" className="text-emerald-600 hover:underline">Terms of Service</a>
                 {" "}and{" "}
-                <a href="/privacy" className="text-emerald-600 hover:underline">Privacy Policy</a>
+                <a href="/privacy-policy" className="text-emerald-600 hover:underline">Privacy Policy</a>
               </p>
             </>
           ) : (
