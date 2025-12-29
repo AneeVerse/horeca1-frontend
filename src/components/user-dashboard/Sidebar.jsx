@@ -19,9 +19,10 @@ import useUtilsFunction from "@hooks/useUtilsFunction";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import { signOut } from "next-auth/react";
+import { getCookieOptions } from "@utils/cookieConfig";
 import { useState, useEffect } from "react";
 import { useSetting } from "@context/SettingContext";
+import { handleLogout } from "@utils/logout";
 
 const Sidebar = () => {
   const router = useRouter();
@@ -68,7 +69,7 @@ const Sidebar = () => {
                 setUserInfo(freshUserInfo);
                 
                 // Update cookie with fresh data
-                Cookies.set("userInfo", JSON.stringify(freshUserInfo), { expires: 30 });
+                Cookies.set("userInfo", JSON.stringify(freshUserInfo), getCookieOptions(30));
               }
             } catch (err) {
               // If API call fails, just use cookie data
@@ -105,10 +106,7 @@ const Sidebar = () => {
   const { showingTranslateValue } = useUtilsFunction();
 
   const handleLogOut = () => {
-    signOut();
-    Cookies.remove("couponInfo");
-    Cookies.remove("userInfo");
-    router.push("/");
+    handleLogout({ redirectUrl: "/" });
   };
 
   // Get display name (fallback to phone if no name)

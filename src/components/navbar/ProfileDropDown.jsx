@@ -6,6 +6,7 @@ import { Transition, Menu, MenuButton } from "@headlessui/react";
 import { FiUser } from "react-icons/fi";
 import Image from "next/image";
 import Cookies from "js-cookie";
+import { getCookieOptions } from "@utils/cookieConfig";
 
 //internal imports
 import { userNavigation } from "@utils/data";
@@ -52,7 +53,7 @@ const ProfileDropDown = () => {
                 setUserInfo(freshUserInfo);
                 
                 // Update cookie with fresh data
-                Cookies.set("userInfo", JSON.stringify(freshUserInfo), { expires: 30 });
+                Cookies.set("userInfo", JSON.stringify(freshUserInfo), getCookieOptions(30));
               }
             } catch (err) {
               console.error("[ProfileDropDown] Failed to fetch customer data:", err);

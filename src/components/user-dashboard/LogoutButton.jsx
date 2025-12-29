@@ -2,7 +2,7 @@
 import React from "react";
 
 import { FiUnlock } from "react-icons/fi";
-import { signOut } from "next-auth/react";
+import { handleLogout } from "@utils/logout";
 
 //internal imports
 import useUtilsFunction from "@hooks/useUtilsFunction";
@@ -15,7 +15,7 @@ const LogoutButton = ({ storeCustomizationSetting }) => {
         <FiUnlock />
       </span>{" "}
       <button
-        onClick={() => signOut()}
+        onClick={() => handleLogout({ redirectUrl: "/" })}
         type="submit"
         className="inline-flex items-center justify-between text-sm font-medium w-full hover:text-emerald-600"
       >

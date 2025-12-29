@@ -101,15 +101,15 @@ const SearchScreen = ({ products, attributes, categories, currency }) => {
                 </h2>
               </div>
             ) : (
-              <div className="flex justify-between my-3 bg-orange-100 border border-gray-100 rounded p-3">
-                <h6 className="text-sm">
-                  Total <span className="font-bold">{productData?.length}</span>{" "}
+              <div className="flex justify-between items-center my-3 bg-primary-50 border border-primary-200 rounded-lg p-3 sm:p-4">
+                <h6 className="text-sm font-medium text-gray-700">
+                  Total <span className="font-bold text-primary-600">{productData?.length}</span>{" "}
                   Items Found
                 </h6>
                 <span className="text-sm">
                   <select
                     onChange={(e) => setSortedField(e.target.value)}
-                    className="py-0 text-sm font-medium block w-full rounded border-0 bg-white pr-10 cursor-pointer focus:ring-0"
+                    className="py-2 px-4 text-sm font-medium block w-full rounded-lg border border-primary-300 bg-white text-gray-700 pr-10 cursor-pointer focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors hover:border-primary-400"
                   >
                     <option className="px-3" value="All" defaultValue hidden>
                       Sort By Price
