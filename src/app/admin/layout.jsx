@@ -11,7 +11,7 @@ import {
   XMarkIcon,
   ShoppingCartIcon,
   UsersIcon,
-  TicketIcon,
+  MapPinIcon,
   ArrowRightOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import { isAdminAuthenticated, logoutAdmin } from "@services/AdminAuthService";
@@ -22,7 +22,7 @@ const navigation = [
   { name: "Products", href: "/admin/products", icon: CubeIcon },
   { name: "Orders", href: "/admin/orders", icon: ShoppingCartIcon },
   { name: "Customers", href: "/admin/customers", icon: UsersIcon },
-  { name: "Coupons", href: "/admin/coupons", icon: TicketIcon },
+  { name: "PIN Codes", href: "/admin/pincodes", icon: MapPinIcon },
 ];
 
 export default function AdminLayout({ children }) {
@@ -35,7 +35,7 @@ export default function AdminLayout({ children }) {
     const checkAuth = () => {
       const authenticated = isAdminAuthenticated();
       setIsAuthenticated(authenticated);
-      
+
       // Redirect to login if not authenticated and not already on login page
       if (!authenticated && pathname !== "/admin/login") {
         router.push("/admin/login");
@@ -64,9 +64,8 @@ export default function AdminLayout({ children }) {
     <div className="min-h-screen bg-gray-50">
       {/* Mobile sidebar */}
       <div
-        className={`fixed inset-0 z-50 lg:hidden ${
-          sidebarOpen ? "block" : "hidden"
-        }`}
+        className={`fixed inset-0 z-50 lg:hidden ${sidebarOpen ? "block" : "hidden"
+          }`}
       >
         <div
           className="fixed inset-0 bg-gray-600 bg-opacity-75"
@@ -89,11 +88,10 @@ export default function AdminLayout({ children }) {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium ${
-                    isActive
+                  className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium ${isActive
                       ? "bg-blue-50 text-blue-700"
                       : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                  }`}
+                    }`}
                   onClick={() => setSidebarOpen(false)}
                 >
                   <item.icon className="h-5 w-5" />
@@ -127,11 +125,10 @@ export default function AdminLayout({ children }) {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium ${
-                    isActive
+                  className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium ${isActive
                       ? "bg-blue-50 text-blue-700"
                       : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                  }`}
+                    }`}
                 >
                   <item.icon className="h-5 w-5" />
                   {item.name}
@@ -163,8 +160,7 @@ export default function AdminLayout({ children }) {
           </button>
           <div className="flex-1">
             <h2 className="text-lg font-semibold text-gray-900">
-              {navigation.find((item) => item.href === pathname)?.name ||
-                "Admin"}
+              {navigation.find((item) => item.href === pathname)?.name || ""}
             </h2>
           </div>
         </div>
