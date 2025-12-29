@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCart } from "react-use-cart";
 import { IoBagCheckOutline, IoClose, IoBagHandle } from "react-icons/io5";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 //internal import
 import CartItem from "@components/cart/CartItem";
@@ -14,7 +14,7 @@ import Image from "next/image";
 const Cart = ({ setOpen, currency }) => {
   const router = useRouter();
   const { isEmpty, items, cartTotal } = useCart();
-  
+
   // Use state to reactively track user session
   const [userInfo, setUserInfo] = useState(null);
 
@@ -24,25 +24,42 @@ const Cart = ({ setOpen, currency }) => {
       const session = getUserSession();
       setUserInfo(session);
     };
-    
+
     // Check immediately
     checkUserSession();
-    
+
     // Also check periodically to catch login state changes (every 1 second)
     const interval = setInterval(checkUserSession, 1000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
+  // Calculate pricing breakdown
+  const pricingBreakdown = useMemo(() => {
+    const deliveryThreshold = 500;
+    const standardDeliveryCharge = 30;
+    const isFreeDelivery = cartTotal >= deliveryThreshold;
+    const actualDeliveryCharge = isFreeDelivery ? 0 : standardDeliveryCharge;
+
+    return {
+      deliveryCharge: actualDeliveryCharge,
+      standardDeliveryCharge,
+      isFreeDelivery,
+      deliveryThreshold,
+      total: cartTotal + actualDeliveryCharge,
+      savings: isFreeDelivery ? standardDeliveryCharge : 0,
+    };
+  }, [cartTotal]);
+
   const handleCheckout = (e) => {
     e.preventDefault();
-    
+
     if (items?.length <= 0) {
       setOpen(false);
     } else {
       // Re-check user session right before redirect
       const currentUserInfo = getUserSession();
-      
+
       if (!currentUserInfo) {
         // Redirect to login with redirectUrl parameter to return to checkout after login
         router.push(`/auth/login?redirectUrl=/checkout`, { scroll: true });
@@ -101,26 +118,73 @@ const Cart = ({ setOpen, currency }) => {
             <CartItem key={i + 1} item={item} currency={currency} />
           ))}
         </div>
-        <div className="bg-neutral-50 dark:bg-slate-900 p-5 pb-20 sm:pb-5">
-          <p className="flex justify-between font-semibold text-slate-900 dark:text-slate-100">
-            <span>
-              <span>Subtotal</span>
-              <span className="block text-sm text-slate-500 dark:text-slate-400 font-normal">
-                Shipping and taxes calculated at checkout.
-              </span>
-            </span>
-            <span>
-              {currency}
-              {cartTotal.toFixed(2)}
-            </span>
-          </p>
 
-          <div className="flex mt-5">
+        {/* Footer with improved pricing */}
+        <div className="bg-neutral-50 dark:bg-slate-900 p-5 pb-20 sm:pb-5 border-t border-gray-100">
+          {/* Price Breakdown */}
+          <div className="space-y-2 text-sm">
+            {/* Subtotal */}
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600 font-medium">Subtotal</span>
+              <span className="text-gray-900 font-semibold">
+                {currency}{cartTotal.toFixed(2)}
+              </span>
+            </div>
+
+            {/* Delivery Charge */}
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600 font-medium">Delivery</span>
+              <div className="flex items-center gap-2">
+                {pricingBreakdown.isFreeDelivery ? (
+                  <>
+                    <span className="text-gray-400 line-through text-xs">
+                      {currency}{pricingBreakdown.standardDeliveryCharge}
+                    </span>
+                    <span className="text-emerald-600 font-bold text-sm">
+                      FREE
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-gray-900 font-semibold">
+                    {currency}{pricingBreakdown.deliveryCharge}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Free delivery hint */}
+            {!pricingBreakdown.isFreeDelivery && !isEmpty && (
+              <div className="bg-blue-50 rounded-lg px-3 py-2">
+                <p className="text-xs text-blue-700 flex items-center gap-1">
+                  <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Add {currency}{(pricingBreakdown.deliveryThreshold - cartTotal).toFixed(0)} more for FREE delivery!
+                </p>
+              </div>
+            )}
+
+            {/* Divider */}
+            <div className="border-t border-gray-200 pt-2 mt-2"></div>
+
+            {/* Total */}
+            <div className="flex justify-between items-center">
+              <span className="text-gray-900 font-bold">Total</span>
+              <span className="text-gray-900 font-bold text-lg">
+                {currency}{pricingBreakdown.total.toFixed(2)}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex mt-4">
             <button
               onClick={handleCheckout}
-              className="relative h-auto w-full inline-flex items-center justify-center rounded-md transition-colors text-sm sm:text-base font-medium py-2 px-3 bg-primary-500 hover:bg-primary-600 border border-primary-500 text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-600 dark:focus:ring-offset-0"
+              className="relative h-12 w-full inline-flex items-center justify-center rounded-lg transition-all text-sm sm:text-base font-bold py-2 px-3 bg-emerald-500 hover:bg-emerald-600 text-white shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
             >
               Checkout
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </button>
           </div>
         </div>
@@ -130,3 +194,4 @@ const Cart = ({ setOpen, currency }) => {
 };
 
 export default Cart;
+
