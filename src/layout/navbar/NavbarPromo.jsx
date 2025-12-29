@@ -41,12 +41,14 @@ const NavbarPromo = ({ languages, categories, categoryError }) => {
   const isUserDashboard = pathname?.startsWith("/user");
   // Hide on search page
   const isSearchPage = pathname?.startsWith("/search");
+  // Hide on checkout page
+  const isCheckoutPage = pathname === "/checkout";
 
   const { showingTranslateValue } = useUtilsFunction();
   const navbar = storeCustomization?.navbar;
 
-  // Hide navigation bar on home page, auth pages, contact-us page, user dashboard, or search page
-  if (isHomePage || isAuthPage || isContactPage || isUserDashboard || isSearchPage) {
+  // Hide navigation bar on home page, auth pages, contact-us page, user dashboard, search page, or checkout page
+  if (isHomePage || isAuthPage || isContactPage || isUserDashboard || isSearchPage || isCheckoutPage) {
     return null;
   }
 

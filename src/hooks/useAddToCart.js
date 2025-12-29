@@ -24,7 +24,7 @@ const useAddToCart = () => {
       router.push(`/auth/otp-login?redirectUrl=${encodeURIComponent(pathname)}`);
       return;
     }
-    
+
     const result = items.find((i) => i.id === product.id);
     // console.log(
     //   "result in add to",
@@ -37,14 +37,18 @@ const useAddToCart = () => {
     //   // item
     // );
     const { variants, categories, description, ...updatedProduct } = product;
-    
+
     // Explicitly preserve product details (sku, hsn, unit, brand) for order details
+    // Also include tax and pricing info for checkout calculations
     const cartItem = {
       ...updatedProduct,
       sku: product.sku,
       hsn: product.hsn,
       unit: product.unit,
       brand: product.brand,
+      taxPercent: product.taxPercent || 0,
+      taxableRate: product.taxableRate || 0,
+      originalPrice: product.prices?.originalPrice || product.originalPrice || product.price,
     };
 
     if (result !== undefined) {
