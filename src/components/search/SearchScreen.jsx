@@ -34,27 +34,27 @@ const SearchScreen = ({ products, attributes, categories, currency }) => {
   };
 
   return (
-    <div className="mx-auto max-w-screen-2xl px-3 sm:px-10">
-      <div className="flex py-10 lg:py-12">
-        <div className="flex w-full gap-2">
-          {/* Mobile: Categories sidebar on left - only show on mobile */}
-          <div className="sm:hidden w-20 flex-shrink-0">
-            <div className="sticky top-20 h-[calc(100vh-6rem)] overflow-y-auto py-2">
+    <div className="mx-auto max-w-screen-2xl px-3 sm:px-6 lg:px-10">
+      <div className="flex py-6 sm:py-10 lg:py-12">
+        <div className="flex w-full gap-3 sm:gap-4">
+          {/* Categories sidebar on left - mobile and desktop */}
+          <div className="w-20 sm:w-32 lg:w-40 flex-shrink-0 border-r border-gray-200">
+            <div className="sticky top-20 h-[calc(100vh-6rem)] overflow-y-auto py-2 sm:py-4">
               <ul className="flex flex-col gap-2">
                 {/* All tab with product-header image */}
                 <li className="w-full">
                   <div
                     onClick={() => handleCategoryClick(null, "All")}
-                    className="flex flex-col items-center p-2 cursor-pointer hover:bg-gray-50 rounded-md transition-colors"
+                    className="flex flex-col items-center p-2 sm:p-3 cursor-pointer hover:bg-gray-50 rounded-md transition-colors"
                   >
                     <Image
                       src="/product-header.png"
                       alt="All Products"
                       width={32}
                       height={32}
-                      className="object-contain mb-1"
+                      className="sm:w-10 sm:h-10 lg:w-12 lg:h-12 object-contain mb-1 sm:mb-2"
                     />
-                    <span className="text-[10px] text-gray-700 font-medium leading-tight line-clamp-2 text-center hover:text-primary-600">
+                    <span className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-medium leading-tight line-clamp-2 text-center hover:text-primary-600">
                       All
                     </span>
                   </div>
@@ -63,7 +63,7 @@ const SearchScreen = ({ products, attributes, categories, currency }) => {
                   <li key={i + 1} className="w-full">
                     <div
                       onClick={() => handleCategoryClick(category._id, showingTranslateValue(category?.name))}
-                      className="flex flex-col items-center p-2 cursor-pointer hover:bg-gray-50 rounded-md transition-colors"
+                      className="flex flex-col items-center p-2 sm:p-3 cursor-pointer hover:bg-gray-50 rounded-md transition-colors"
                     >
                       {category.icon ? (
                         <Image
@@ -71,12 +71,12 @@ const SearchScreen = ({ products, attributes, categories, currency }) => {
                           alt={category.name || "category"}
                           width={32}
                           height={32}
-                          className="object-contain mb-1"
+                          className="sm:w-10 sm:h-10 lg:w-12 lg:h-12 object-contain mb-1 sm:mb-2"
                         />
                       ) : (
-                        <div className="w-8 h-8 bg-gray-100 rounded-full mb-1" />
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gray-100 rounded-full mb-1 sm:mb-2" />
                       )}
-                      <span className="text-[10px] text-gray-700 font-medium leading-tight line-clamp-2 text-center hover:text-primary-600">
+                      <span className="text-[10px] sm:text-xs lg:text-sm text-gray-700 font-medium leading-tight line-clamp-2 text-center hover:text-primary-600">
                         {showingTranslateValue(category?.name)}
                       </span>
                     </div>

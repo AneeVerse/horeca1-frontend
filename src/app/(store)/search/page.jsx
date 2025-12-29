@@ -48,15 +48,7 @@ const Search = async ({ searchParams }) => {
 
   return (
     <>
-      {/* Desktop: Show FeatureCategory at top */}
-      <div className="hidden sm:block mx-auto max-w-screen-2xl px-3 sm:px-10">
-        <div className="bg-white dark:bg-zinc-900 lg:py-10 py-6">
-          <Suspense fallback={<p>Loading categories...</p>}>
-            <FeatureCategory />
-          </Suspense>
-        </div>
-      </div>
-      {/* SearchScreen handles mobile sidebar layout internally */}
+      {/* SearchScreen handles sidebar layout for both mobile and desktop */}
       <SearchScreen
         products={products}
         attributes={attributes}
