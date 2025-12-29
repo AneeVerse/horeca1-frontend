@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, useContext } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FiSmartphone, FiArrowLeft, FiShield } from "react-icons/fi";
+import { FiSmartphone, FiArrowLeft } from "react-icons/fi";
+import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { sendOTP, verifyOTP, resendOTP } from "@services/OTPServices";
 import { notifyError, notifySuccess } from "@utils/toast";
@@ -323,15 +324,17 @@ const OTPLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-start justify-center px-4 pt-8 pb-4">
+    <div className="min-h-screen bg-primary flex items-start justify-center px-4 pt-8 pb-4">
       <div className="w-full max-w-md">
         {/* Logo/Brand */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg mb-3">
-            <FiShield className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center mb-3">
+            <img
+              className="h-12 w-auto brightness-0 invert"
+              src="https://res.cloudinary.com/dezs8ma9n/image/upload/v1766484997/horecaLogo_hirtnv.png"
+              alt="horeca1"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">horeca1</h1>
-          <p className="text-gray-500 text-sm mt-1">Fresh groceries delivered</p>
         </div>
 
         {/* Card */}
@@ -365,7 +368,7 @@ const OTPLogin = () => {
                       value={displayPhone}
                       onChange={handlePhoneChange}
                       placeholder="Enter 10 digit number"
-                      className="w-full pl-14 pr-4 py-4 text-lg font-medium border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 outline-none transition-all placeholder:text-gray-300"
+                      className="w-full pl-14 pr-4 py-4 text-lg font-medium border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 outline-none transition-all placeholder:text-gray-300"
                       maxLength={10}
                       autoComplete="tel"
                     />
@@ -376,7 +379,7 @@ const OTPLogin = () => {
                 <button
                   type="submit"
                   disabled={loading || displayPhone.length < 10}
-                  className="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-700 focus:ring-4 focus:ring-emerald-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                  className="w-full py-4 px-6 bg-primary-500 text-white font-semibold rounded-xl hover:bg-primary-600 focus:ring-4 focus:ring-primary-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <>
@@ -400,9 +403,9 @@ const OTPLogin = () => {
               {/* Terms */}
               <p className="text-xs text-gray-400 text-center mt-6">
                 By continuing, you agree to our{" "}
-                <a href="/terms-and-conditions" className="text-emerald-600 hover:underline">Terms of Service</a>
+                <a href="/terms-and-conditions" className="text-primary-300 hover:underline">Terms of Service</a>
                 {" "}and{" "}
-                <a href="/privacy-policy" className="text-emerald-600 hover:underline">Privacy Policy</a>
+                <a href="/privacy-policy" className="text-primary-300 hover:underline">Privacy Policy</a>
               </p>
             </>
           ) : (
@@ -420,8 +423,8 @@ const OTPLogin = () => {
               </button>
 
               <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-100 rounded-full mb-4">
-                  <FiSmartphone className="w-6 h-6 text-emerald-600" />
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-500/20 rounded-full mb-4">
+                  <FiSmartphone className="w-6 h-6 text-primary-500" />
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900">
                   Verify OTP
@@ -429,7 +432,7 @@ const OTPLogin = () => {
                 <p className="text-gray-500 text-sm mt-1">
                   Enter the 6-digit code sent to
                 </p>
-                <p className="text-emerald-600 font-semibold mt-1">
+                <p className="text-primary-500 font-semibold mt-1">
                   {formatDisplayPhone(displayPhone)}
                 </p>
                 
@@ -455,7 +458,7 @@ const OTPLogin = () => {
                     onChange={(e) => handleOTPChange(index, e.target.value)}
                     onKeyDown={(e) => handleOTPKeyDown(index, e)}
                     onPaste={index === 0 ? handleOTPPaste : undefined}
-                    className="w-11 h-14 sm:w-12 sm:h-14 text-center text-xl font-bold border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 outline-none transition-all"
+                    className="w-11 h-14 sm:w-12 sm:h-14 text-center text-xl font-bold border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 outline-none transition-all"
                     autoComplete="one-time-code"
                   />
                 ))}
@@ -484,13 +487,13 @@ const OTPLogin = () => {
               <div className="text-center">
                 {resendTimer > 0 ? (
                   <p className="text-sm text-gray-500">
-                    Resend OTP in <span className="font-semibold text-emerald-600">{resendTimer}s</span>
+                    Resend OTP in <span className="font-semibold text-primary-500">{resendTimer}s</span>
                   </p>
                 ) : (
                   <button
                     onClick={handleResendOTP}
                     disabled={loading}
-                    className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 disabled:opacity-50 transition-colors"
+                    className="text-sm font-semibold text-primary-500 hover:text-primary-600 disabled:opacity-50 transition-colors"
                   >
                     Didn't receive? Resend OTP
                   </button>
@@ -503,7 +506,7 @@ const OTPLogin = () => {
         {/* Help */}
         <p className="text-center text-gray-400 text-xs mt-6">
           Having trouble?{" "}
-          <a href="/contact" className="text-emerald-600 hover:underline">Contact Support</a>
+          <a href="/contact" className="text-primary-300 hover:underline">Contact Support</a>
         </p>
       </div>
     </div>

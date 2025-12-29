@@ -2,7 +2,6 @@ import { Suspense } from "react";
 
 //internal import
 import OfferCard from "@components/offer/OfferCard";
-import StickyCart from "@components/cart/StickyCart";
 import MainCarousel from "@components/carousel/MainCarousel";
 import CMSkeletonTwo from "@components/preloader/CMSkeleton";
 import FeatureCategory from "@components/category/FeatureCategory";
@@ -14,14 +13,18 @@ import {
 } from "@services/SettingServices";
 import DiscountedCard from "@components/product/DiscountedCard";
 import PopularProductsCarousel from "@components/product/PopularProductsCarousel";
+import CategoryProductsSection from "@components/product/CategoryProductsSection";
+import { getShowingCategory } from "@services/CategoryService";
+import { showingTranslateValue } from "@lib/translate";
 
 const Home = async () => {
   // Fetch all data in parallel with error handling
-  const [attributesResult, customizationResult, productsResult, globalResult] = await Promise.allSettled([
+  const [attributesResult, customizationResult, productsResult, globalResult, categoriesResult] = await Promise.allSettled([
     getShowingAttributes(),
     getStoreCustomizationSetting(),
     getShowingStoreProducts({ category: "", title: "" }),
     getGlobalSetting(),
+    getShowingCategory(),
   ]);
 
   // Extract results with fallbacks
@@ -29,16 +32,32 @@ const Home = async () => {
   const { storeCustomizationSetting, error: storeCustomizationError } = customizationResult.status === 'fulfilled' ? customizationResult.value : { storeCustomizationSetting: null, error: null };
   const { popularProducts = [], discountedProducts = [], error } = productsResult.status === 'fulfilled' ? productsResult.value : { popularProducts: [], discountedProducts: [], error: null };
   const { globalSetting } = globalResult.status === 'fulfilled' ? globalResult.value : { globalSetting: null };
+  const { categories: allCategories } = categoriesResult.status === 'fulfilled' ? categoriesResult.value : { categories: [] };
   
   const currency = globalSetting?.default_currency || "₹";
+
+  // Get top 3 categories in order (already sorted by order field from backend)
+  const topCategories = (allCategories[0]?.children || []).filter(cat => cat && cat._id).slice(0, 3);
+  
+  // Fetch products for top 3 categories (in order, show even if no products)
+  const productsByCategory = {};
+  
+  for (const category of topCategories) {
+    try {
+      const categoryProducts = await getShowingStoreProducts({ 
+        category: category._id, 
+        title: "" 
+      });
+      productsByCategory[category._id] = categoryProducts.products?.slice(0, 20) || [];
+    } catch (err) {
+      productsByCategory[category._id] = [];
+    }
+  }
 
   // console.log("storeCustomizationSetting", storeCustomizationSetting);
 
   return (
     <div className="min-h-screen dark:bg-zinc-900">
-      {/* sticky cart section */}
-      <StickyCart currency={currency} />
-
       <div className="bg-white dark:bg-zinc-900">
         <div className="mx-auto py-5 max-w-screen-2xl px-3 sm:px-10">
           <div className="flex flex-col lg:flex-row w-full gap-4 lg:gap-6">
@@ -62,7 +81,7 @@ const Home = async () => {
 
       {/* feature category's */}
       {storeCustomizationSetting?.home?.featured_status && (
-        <div className="bg-white dark:bg-zinc-900 lg:py-10 py-6">
+        <div className="bg-white dark:bg-zinc-900 lg:pt-4 lg:pb-4 pt-2 pb-3">
           <div className="mx-auto max-w-screen-2xl px-3 sm:px-10">
             <Suspense fallback={<p>Loading feature category...</p>}>
               <FeatureCategory />
@@ -71,9 +90,9 @@ const Home = async () => {
         </div>
       )}
 
-      {/* popular products - with header and carousel */}
-      {storeCustomizationSetting?.home?.popular_products_status && (
-        <div className="bg-gray-50 dark:bg-zinc-900 lg:py-16 py-10 mx-auto max-w-screen-2xl px-3 sm:px-10">
+      {/* Category-based products sections */}
+      {storeCustomizationSetting?.home?.popular_products_status && topCategories.length > 0 && (
+        <div className="bg-gray-50 dark:bg-zinc-900 lg:pt-4 lg:pb-16 pt-3 pb-10 mx-auto max-w-screen-2xl px-3 sm:px-10">
           {error ? (
             <CMSkeletonTwo
               count={20}
@@ -82,11 +101,9 @@ const Home = async () => {
               loading={false}
             />
           ) : (
-            <PopularProductsCarousel
-              products={popularProducts?.slice(
-                0,
-                storeCustomizationSetting?.home?.latest_discount_product_limit
-              )}
+            <CategoryProductsSection
+              categories={topCategories}
+              productsByCategory={productsByCategory}
               attributes={attributes}
               currency={currency}
             />
