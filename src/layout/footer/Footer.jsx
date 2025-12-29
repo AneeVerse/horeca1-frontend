@@ -12,9 +12,9 @@ const Footer = async ({ error, storeCustomizationSetting }) => {
   const footer = storeCustomizationSetting?.footer;
 
   return (
-    <div className="bg-gradient-to-b from-emerald-50 to-white pb-20 lg:pb-8">
+    <div className="bg-gradient-to-b from-primary-50 to-white pb-20 lg:pb-8">
       {/* Hero Logo Section */}
-      <div className="bg-emerald-500 py-12 lg:py-20">
+      <div className="bg-primary-500 py-12 lg:py-20">
         <div className="mx-auto max-w-screen-2xl px-4 sm:px-10 flex flex-col items-center justify-center text-center">
           <div className="relative w-48 md:w-64 lg:w-full lg:max-w-md">
             <img
@@ -51,34 +51,34 @@ const Footer = async ({ error, storeCustomizationSetting }) => {
           <div className="lg:col-span-7">
             {/* Mobile Layout - All links in a centered, wrapped flex container */}
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-3 lg:hidden">
-              <Link href="/pages/payment-policy" className="text-gray-700 hover:text-emerald-600 transition-colors text-sm font-medium">Payment Policy</Link>
-              <Link href="/pages/terms-and-conditions" className="text-gray-700 hover:text-emerald-600 transition-colors text-sm font-medium">Terms & Conditions</Link>
-              <Link href="/pages/privacy-policy" className="text-gray-700 hover:text-emerald-600 transition-colors text-sm font-medium">Privacy Policy</Link>
-              <Link href="/user/dashboard" className="text-gray-700 hover:text-emerald-600 transition-colors text-sm font-medium">My Orders</Link>
-              <Link href="/user/dashboard" className="text-gray-700 hover:text-emerald-600 transition-colors text-sm font-medium">Customer Support</Link>
-              <Link href="/about-us" className="text-gray-700 hover:text-emerald-600 transition-colors text-sm font-medium">About Us</Link>
-              <Link href="/faq" className="text-gray-700 hover:text-emerald-600 transition-colors text-sm font-medium">FAQ</Link>
+              <Link href="/pages/payment-policy" className="text-gray-700 hover:text-primary-600 transition-colors text-sm font-medium">Payment Policy</Link>
+              <Link href="/pages/terms-and-conditions" className="text-gray-700 hover:text-primary-600 transition-colors text-sm font-medium">Terms & Conditions</Link>
+              <Link href="/pages/privacy-policy" className="text-gray-700 hover:text-primary-600 transition-colors text-sm font-medium">Privacy Policy</Link>
+              <Link href="/user/dashboard" className="text-gray-700 hover:text-primary-600 transition-colors text-sm font-medium">My Orders</Link>
+              <Link href="/user/dashboard" className="text-gray-700 hover:text-primary-600 transition-colors text-sm font-medium">Customer Support</Link>
+              <Link href="/about-us" className="text-gray-700 hover:text-primary-600 transition-colors text-sm font-medium">About Us</Link>
+              <Link href="/faq" className="text-gray-700 hover:text-primary-600 transition-colors text-sm font-medium">FAQ</Link>
             </div>
 
             {/* Desktop Layout - 3 columns grid */}
             <div className="hidden lg:grid grid-cols-3 gap-8">
               {/* Column 1 */}
               <div className="space-y-3">
-                <Link href="/pages/payment-policy" className="block text-gray-700 hover:text-emerald-600 transition-colors text-sm">Payment Policy</Link>
-                <Link href="/pages/terms-and-conditions" className="block text-gray-700 hover:text-emerald-600 transition-colors text-sm">Terms & Conditions</Link>
-                <Link href="/pages/privacy-policy" className="block text-gray-700 hover:text-emerald-600 transition-colors text-sm">Privacy Policy</Link>
+                <Link href="/pages/payment-policy" className="block text-gray-700 hover:text-primary-600 transition-colors text-sm">Payment Policy</Link>
+                <Link href="/pages/terms-and-conditions" className="block text-gray-700 hover:text-primary-600 transition-colors text-sm">Terms & Conditions</Link>
+                <Link href="/pages/privacy-policy" className="block text-gray-700 hover:text-primary-600 transition-colors text-sm">Privacy Policy</Link>
               </div>
 
               {/* Column 2 */}
               <div className="space-y-3">
-                <Link href="/user/dashboard" className="block text-gray-700 hover:text-emerald-600 transition-colors text-sm">My Orders</Link>
-                <Link href="/user/dashboard" className="block text-gray-700 hover:text-emerald-600 transition-colors text-sm">Customer Support</Link>
+                <Link href="/user/dashboard" className="block text-gray-700 hover:text-primary-600 transition-colors text-sm">My Orders</Link>
+                <Link href="/user/dashboard" className="block text-gray-700 hover:text-primary-600 transition-colors text-sm">Customer Support</Link>
               </div>
 
               {/* Column 3 */}
               <div className="space-y-3">
-                <Link href="/about-us" className="block text-gray-700 hover:text-emerald-600 transition-colors text-sm">About Us</Link>
-                <Link href="/faq" className="block text-gray-700 hover:text-emerald-600 transition-colors text-sm">FAQ</Link>
+                <Link href="/about-us" className="block text-gray-700 hover:text-primary-600 transition-colors text-sm">About Us</Link>
+                <Link href="/faq" className="block text-gray-700 hover:text-primary-600 transition-colors text-sm">FAQ</Link>
               </div>
             </div>
           </div>
@@ -88,11 +88,11 @@ const Footer = async ({ error, storeCustomizationSetting }) => {
         <div className="border-t border-gray-200 py-6 flex flex-col items-center text-center lg:flex-row lg:justify-between lg:text-left text-xs text-gray-500 gap-3 lg:gap-4">
           <p className="order-2 lg:order-1">© {new Date().getFullYear()} Horeca1. All rights reserved.</p>
           <div className="order-1 lg:order-2 flex items-center gap-3 lg:gap-4">
-            <Link href="/pages/privacy-policy" className="hover:text-emerald-600 transition-colors">Privacy Policy</Link>
+            <Link href="/pages/privacy-policy" className="hover:text-primary-600 transition-colors">Privacy Policy</Link>
             <span className="text-gray-300">|</span>
-            <Link href="/pages/terms-and-conditions" className="hover:text-emerald-600 transition-colors">Terms of Service</Link>
+            <Link href="/pages/terms-and-conditions" className="hover:text-primary-600 transition-colors">Terms of Service</Link>
           </div>
-          <p className="order-3 text-gray-400">Designed & Managed by <span className="text-emerald-600 font-medium">Aneeverse</span></p>
+          <p className="order-3 text-gray-400">Designed & Managed by <span className="text-primary-600 font-medium">Aneeverse</span></p>
         </div>
       </div>
     </div>
