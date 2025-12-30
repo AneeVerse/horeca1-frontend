@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -43,6 +44,22 @@ const ProductModal = ({
   const currency = globalSetting?.default_currency || "₹";
   const { item, setItem, totalItems, handleAddItem, handleIncreaseQuantity } =
     useAddToCart();
+
+  // Check if current time is between 6pm (18:00) and 9am (09:00)
+  const [isPromoTime, setIsPromoTime] = useState(false);
+
+  useEffect(() => {
+    const checkPromoTime = () => {
+      const now = new Date();
+      const hours = now.getHours();
+      // 6pm (18:00) to midnight (23:59) or midnight (00:00) to 9am (08:59)
+      setIsPromoTime(hours >= 18 || hours < 9);
+    };
+    checkPromoTime();
+    const interval = setInterval(checkPromoTime, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, []);
+
   const {
     // state
     value,
@@ -106,9 +123,8 @@ const ProductModal = ({
             <div className="w-full lg:w-[60%] pt-6 lg:pt-0 lg:pl-7 xl:pl-10">
               <div className="mb-2 md:mb-2.5 block -mt-1.5">
                 <div
-                  className={`${
-                    stock <= 0 ? "relative py-1 mb-2" : "relative"
-                  }`}
+                  className={`${stock <= 0 ? "relative py-1 mb-2" : "relative"
+                    }`}
                 >
                   <Stock In stock={stock} />
                 </div>
@@ -130,6 +146,113 @@ const ProductModal = ({
                   <Discount slug product={product} discount={discount} />
                 </span>
               </div>
+
+              {/* Bulk Pricing Display - Only show when NOT promo time */}
+              {!isPromoTime && product?.bulkPricing && (product?.bulkPricing?.bulkRate1?.quantity > 0 || product?.bulkPricing?.bulkRate2?.quantity > 0) && (
+                <div className="bg-gray-50 rounded-lg p-3 mb-4 space-y-2">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Bulk Pricing</h4>
+                  {product?.bulkPricing?.bulkRate1?.quantity > 0 && product?.bulkPricing?.bulkRate1?.pricePerUnit > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-primary-600 font-medium">
+                        Buy {product.bulkPricing.bulkRate1.quantity}+ {product.unit || "units"}
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-bold text-primary-700">
+                          {currency}{product.bulkPricing.bulkRate1.pricePerUnit}/{product.unit || "unit"}
+                        </span>
+                        <button
+                          onClick={() => {
+                            setItem(product.bulkPricing.bulkRate1.quantity);
+                          }}
+                          className="text-xs font-semibold text-white bg-[#018549] hover:bg-[#016d3b] px-3 py-1 rounded transition-colors"
+                        >
+                          Add {product.bulkPricing.bulkRate1.quantity}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {product?.bulkPricing?.bulkRate2?.quantity > 0 && product?.bulkPricing?.bulkRate2?.pricePerUnit > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-primary-600 font-medium">
+                        Buy {product.bulkPricing.bulkRate2.quantity}+ {product.unit || "units"}
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-bold text-primary-700">
+                          {currency}{product.bulkPricing.bulkRate2.pricePerUnit}/{product.unit || "unit"}
+                        </span>
+                        <button
+                          onClick={() => {
+                            setItem(product.bulkPricing.bulkRate2.quantity);
+                          }}
+                          className="text-xs font-semibold text-white bg-[#018549] hover:bg-[#016d3b] px-3 py-1 rounded transition-colors"
+                        >
+                          Add {product.bulkPricing.bulkRate2.quantity}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Promo Bulk Pricing Display (6pm-9am) - Only show during promo time */}
+              {isPromoTime && product?.promoPricing && (product?.promoPricing?.singleUnit > 0 || product?.promoPricing?.bulkRate1?.quantity > 0 || product?.promoPricing?.bulkRate2?.quantity > 0) && (
+                <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-3 mb-4 space-y-2 border border-primary-200/50">
+                  <h4 className="text-sm font-semibold text-primary-700 mb-2 flex items-center gap-2">
+                    <span className="text-xs font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-400 px-2 py-0.5 rounded">PROMO</span>
+                    Happy Hour Pricing (6pm - 9am)
+                  </h4>
+                  {product?.promoPricing?.singleUnit > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-primary-600 font-medium">
+                        Single Unit Price
+                      </span>
+                      <span className="text-sm font-bold text-primary-700">
+                        {currency}{product.promoPricing.singleUnit}/{product.unit || "unit"}
+                      </span>
+                    </div>
+                  )}
+                  {product?.promoPricing?.bulkRate1?.quantity > 0 && product?.promoPricing?.bulkRate1?.pricePerUnit > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-primary-600 font-medium">
+                        Buy {product.promoPricing.bulkRate1.quantity}+ {product.unit || "units"}
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-bold text-primary-700">
+                          {currency}{product.promoPricing.bulkRate1.pricePerUnit}/{product.unit || "unit"}
+                        </span>
+                        <button
+                          onClick={() => {
+                            setItem(product.promoPricing.bulkRate1.quantity);
+                          }}
+                          className="text-xs font-semibold text-white bg-[#018549] hover:bg-[#016d3b] px-3 py-1 rounded transition-colors"
+                        >
+                          Add {product.promoPricing.bulkRate1.quantity}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {product?.promoPricing?.bulkRate2?.quantity > 0 && product?.promoPricing?.bulkRate2?.pricePerUnit > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-primary-600 font-medium">
+                        Buy {product.promoPricing.bulkRate2.quantity}+ {product.unit || "units"}
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-bold text-primary-700">
+                          {currency}{product.promoPricing.bulkRate2.pricePerUnit}/{product.unit || "unit"}
+                        </span>
+                        <button
+                          onClick={() => {
+                            setItem(product.promoPricing.bulkRate2.quantity);
+                          }}
+                          className="text-xs font-semibold text-white bg-[#018549] hover:bg-[#016d3b] px-3 py-1 rounded transition-colors"
+                        >
+                          Add {product.promoPricing.bulkRate2.quantity}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="mb-6">
                 {variantTitle?.map((a, i) => (

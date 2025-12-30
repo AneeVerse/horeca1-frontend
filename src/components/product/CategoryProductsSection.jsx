@@ -135,6 +135,8 @@ const CategoryProductsSection = ({ categories, productsByCategory, attributes, c
                 <Link
                   href={`/search?category=${category.slug || category._id}&_id=${category._id}`}
                   className="text-primary-500 hover:text-primary-600 font-medium text-sm"
+                  scroll={true}
+                  onClick={() => window.scrollTo(0, 0)}
                 >
                   See all
                 </Link>

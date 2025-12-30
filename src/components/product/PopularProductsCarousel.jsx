@@ -49,6 +49,8 @@ const PopularProductsCarousel = ({ products, attributes, currency }) => {
           <Link
             href="/search"
             className="text-primary-500 hover:text-primary-600 font-medium text-sm"
+            scroll={true}
+            onClick={() => window.scrollTo(0, 0)}
           >
             See all
           </Link>

@@ -32,7 +32,7 @@ const SearchInput = () => {
             onChange={(e) => setSearchText(e.target.value)}
             value={searchText}
             className="form-input w-full pl-5 appearance-none transition ease-in-out text-sm text-gray-700 font-sans rounded-md h-9 duration-200 bg-white focus:ring-0 outline-none border-none focus:outline-none"
-            placeholder="Search for products (e.g. shirt, pant)"
+            placeholder="Search for products"
           />
         </label>
         <button
