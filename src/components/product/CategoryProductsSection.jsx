@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import React, { useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { IoChevronBackOutline, IoChevronForward } from "react-icons/io5";
 import { Navigation } from "swiper";
 import "swiper/css";
@@ -14,7 +14,7 @@ import useUtilsFunction from "@hooks/useUtilsFunction";
 
 const CategoryProductsSection = ({ categories, productsByCategory, attributes, currency }) => {
   const { showingTranslateValue } = useUtilsFunction();
-  
+
   if (!categories || categories.length === 0) {
     return null;
   }
@@ -25,44 +25,43 @@ const CategoryProductsSection = ({ categories, productsByCategory, attributes, c
         const categoryProducts = productsByCategory[category._id] || [];
 
         const CategoryCarousel = ({ categoryId, products }) => {
-          const prevRef = useRef(null);
-          const nextRef = useRef(null);
+          const [swiperInstance, setSwiperInstance] = useState(null);
+          const [prevEl, setPrevEl] = useState(null);
+          const [nextEl, setNextEl] = useState(null);
+
+          useEffect(() => {
+            if (swiperInstance && prevEl && nextEl) {
+              swiperInstance.params.navigation.prevEl = prevEl;
+              swiperInstance.params.navigation.nextEl = nextEl;
+              swiperInstance.navigation.destroy();
+              swiperInstance.navigation.init();
+              swiperInstance.navigation.update();
+            }
+          }, [swiperInstance, prevEl, nextEl]);
 
           return (
             <div className="relative">
               <Swiper
-                onInit={(swiper) => {
-                  swiper.params.navigation.prevEl = prevRef.current;
-                  swiper.params.navigation.nextEl = nextRef.current;
-                  swiper.navigation.init();
-                  swiper.navigation.update();
-                }}
+                onSwiper={setSwiperInstance}
                 spaceBetween={16}
                 navigation={{
-                  prevEl: prevRef.current,
-                  nextEl: nextRef.current,
+                  prevEl: prevEl,
+                  nextEl: nextEl,
                 }}
                 allowTouchMove={true}
                 loop={false}
+                slidesPerView={2}
                 breakpoints={{
-                  375: {
-                    width: 375,
-                    slidesPerView: 2,
-                  },
                   640: {
-                    width: 640,
                     slidesPerView: 2,
                   },
                   768: {
-                    width: 768,
                     slidesPerView: 3,
                   },
                   1024: {
-                    width: 1024,
                     slidesPerView: 4,
                   },
                   1280: {
-                    width: 1280,
                     slidesPerView: 5,
                   },
                 }}
@@ -82,14 +81,14 @@ const CategoryProductsSection = ({ categories, productsByCategory, attributes, c
 
               {/* Navigation Buttons - Positioned on Left and Right */}
               <button
-                ref={prevRef}
+                ref={(node) => setPrevEl(node)}
                 className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors -translate-x-2 lg:-translate-x-4"
                 aria-label="Previous products"
               >
                 <IoChevronBackOutline className="w-5 h-5 text-primary-500" />
               </button>
               <button
-                ref={nextRef}
+                ref={(node) => setNextEl(node)}
                 className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors translate-x-2 lg:translate-x-4"
                 aria-label="Next products"
               >

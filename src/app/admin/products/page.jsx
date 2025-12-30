@@ -317,6 +317,7 @@ export default function ProductsPage() {
     setError(null);
     try {
       const result = await getAllProducts();
+      console.log("PRODUCTS DEBUG - Raw result:", result);
       if (result.error) {
         setError(result.error);
         setProducts([]);
@@ -324,6 +325,8 @@ export default function ProductsPage() {
       } else {
         const backendResponse = result.products;
         const productsList = backendResponse?.products || backendResponse || [];
+        console.log("PRODUCTS DEBUG - Products count:", productsList.length);
+        console.log("PRODUCTS DEBUG - First 5 products:", productsList.slice(0, 5).map(p => ({ id: p._id, title: p.title?.en, sku: p.sku })));
         setProducts(Array.isArray(productsList) ? productsList : []);
         setFilteredProducts(Array.isArray(productsList) ? productsList : []);
       }
