@@ -37,22 +37,42 @@ const MainCarousel = async () => {
       url: showingUrl(slider?.third_link),
       image: showingImage(slider?.third_img) || "/slider/slider-3.jpg",
     },
+    // New Banner 1
     {
       id: 4,
-      title: showingTranslateValue(slider?.four_title),
-      info: showingTranslateValue(slider?.four_description),
-      buttonName: showingTranslateValue(slider?.four_button),
-      url: showingUrl(slider?.four_link),
-      image: showingImage(slider?.four_img) || "/slider/slider-1.jpg",
+      title: "",
+      info: "",
+      buttonName: "Shop Now",
+      url: "/",
+      image: "/banner1.png",
     },
+    // New Banner 2
     {
       id: 5,
-      title: showingTranslateValue(slider?.five_title),
-      info: showingTranslateValue(slider?.five_description),
-      buttonName: showingTranslateValue(slider?.five_button),
-      url: showingUrl(slider?.five_link),
-      image: showingImage(slider?.five_img) || "/slider/slider-2.jpg",
+      title: "",
+      info: "",
+      buttonName: "Shop Now",
+      url: "/",
+      image: "/banner2.png",
     },
+    // Old Banner 4 - Commented out per user request
+    // {
+    //   id: 4,
+    //   title: showingTranslateValue(slider?.four_title),
+    //   info: showingTranslateValue(slider?.four_description),
+    //   buttonName: showingTranslateValue(slider?.four_button),
+    //   url: showingUrl(slider?.four_link),
+    //   image: showingImage(slider?.four_img) || "/slider/slider-1.jpg",
+    // },
+    // Old Banner 5 - Commented out per user request
+    // {
+    //   id: 5,
+    //   title: showingTranslateValue(slider?.five_title),
+    //   info: showingTranslateValue(slider?.five_description),
+    //   buttonName: showingTranslateValue(slider?.five_button),
+    //   url: showingUrl(slider?.five_link),
+    //   image: showingImage(slider?.five_img) || "/slider/slider-2.jpg",
+    // },
   ];
 
   return (
