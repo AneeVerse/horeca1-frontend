@@ -126,4 +126,78 @@ export const updateProductStatus = async (id, status) => {
   }
 };
 
+// Update product order (for drag and drop)
+export const updateProductOrder = async (products) => {
+  try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
+    const response = await fetch(`${baseURL}/products/order/update`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: JSON.stringify({ products }),
+    });
 
+    const data = await handleResponse(response);
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: error.message };
+  }
+};
+
+// Get products grouped by category
+export const getProductsByCategory = async () => {
+  try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
+    const response = await fetch(`${baseURL}/products/by-category`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      cache: "no-store",
+    });
+
+    const data = await handleResponse(response);
+    return { data, error: null };
+  } catch (error) {
+    return { data: [], error: error.message };
+  }
+};
+
+// Get product count by category (for delete confirmation)
+export const getProductCountByCategory = async (categoryId) => {
+  try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
+    const response = await fetch(`${baseURL}/products/count/${categoryId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    const data = await handleResponse(response);
+    return { count: data.count, error: null };
+  } catch (error) {
+    return { count: 0, error: error.message };
+  }
+};
+
+// Delete all products in a category
+export const deleteProductsByCategory = async (categoryId) => {
+  try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
+    const response = await fetch(`${baseURL}/products/by-category/${categoryId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    const data = await handleResponse(response);
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: error.message };
+  }
+};

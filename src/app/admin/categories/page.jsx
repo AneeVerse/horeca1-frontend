@@ -24,6 +24,7 @@ import {
   deleteCategory,
   updateCategoryStatus,
 } from "@services/AdminCategoryService";
+import { getProductCountByCategory, deleteProductsByCategory } from "@services/AdminProductService";
 import { updateCategoryOrder } from "@services/ServerActionServices";
 import {
   PlusIcon,
@@ -110,18 +111,16 @@ function SortableRow({ category, onEdit, onDelete, onToggleStatus, getLanguageVa
       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
         <button
           onClick={() => onToggleStatus(category._id, category.status)}
-          className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#018549] focus:ring-offset-2 ${
-            category.status === "show"
-              ? "bg-[#016d3b]"
-              : "bg-gray-200"
-          }`}
+          className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#018549] focus:ring-offset-2 ${category.status === "show"
+            ? "bg-[#016d3b]"
+            : "bg-gray-200"
+            }`}
         >
           <span
-            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-              category.status === "show"
-                ? "translate-x-5"
-                : "translate-x-0"
-            }`}
+            className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${category.status === "show"
+              ? "translate-x-5"
+              : "translate-x-0"
+              }`}
           />
         </button>
       </td>
@@ -135,7 +134,7 @@ function SortableRow({ category, onEdit, onDelete, onToggleStatus, getLanguageVa
             <PencilIcon className="h-5 w-5" />
           </button>
           <button
-            onClick={() => onDelete(category._id)}
+            onClick={() => onDelete(category._id, category.title || category.name)}
             className="text-red-600 hover:text-red-900"
             title="Delete"
           >
@@ -155,6 +154,14 @@ export default function CategoriesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Delete confirmation modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deletingCategoryId, setDeletingCategoryId] = useState(null);
+  const [deletingCategoryName, setDeletingCategoryName] = useState("");
+  const [productCountInCategory, setProductCountInCategory] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const [formData, setFormData] = useState({
     name: { en: "" },
     description: { en: "" },
@@ -212,7 +219,7 @@ export default function CategoriesPage() {
       const newIndex = filteredCategories.findIndex((cat) => cat._id === over.id);
 
       const newCategories = arrayMove(filteredCategories, oldIndex, newIndex);
-      
+
       // Update order in backend first
       const categoriesWithOrder = newCategories.map((cat, index) => ({
         _id: cat._id,
@@ -222,17 +229,17 @@ export default function CategoriesPage() {
       try {
         const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
         const result = await updateCategoryOrder(categoriesWithOrder, token);
-        
+
         if (result.error) {
           throw new Error(result.error);
         }
-        
+
         // Update the order field in local state to match backend
         const updatedCategories = newCategories.map((cat, index) => ({
           ...cat,
           order: index,
         }));
-        
+
         // Update both states after successful API call
         setCategories(updatedCategories);
         setFilteredCategories(updatedCategories);
@@ -249,7 +256,7 @@ export default function CategoriesPage() {
       setEditingCategory(category);
       // Backend uses 'icon' field for image URL
       const iconValue = category.icon || category.image || "";
-      
+
       setFormData({
         name: category.name || { en: "" },
         description: category.description || { en: "" },
@@ -287,7 +294,7 @@ export default function CategoriesPage() {
         ...formData,
         parentId: null, // Explicitly set to null to ensure it's a parent category
       };
-      
+
       if (editingCategory) {
         await updateCategory(editingCategory._id, submitData);
       } else {
@@ -300,15 +307,51 @@ export default function CategoriesPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (confirm("Are you sure you want to delete this category?")) {
-      try {
-        await deleteCategory(id);
-        fetchCategories();
-      } catch (err) {
-        setError(err.message || "Failed to delete category");
-      }
+  // Open delete confirmation modal
+  const handleDeleteClick = async (id, name) => {
+    try {
+      setDeletingCategoryId(id);
+      setDeletingCategoryName(getLanguageValue(name));
+
+      // Check product count
+      const { count } = await getProductCountByCategory(id);
+      setProductCountInCategory(count);
+      setDeleteModalOpen(true);
+    } catch (err) {
+      setError(err.message || "Failed to check category products");
     }
+  };
+
+  // Confirm delete action
+  const handleConfirmDelete = async () => {
+    if (!deletingCategoryId) return;
+
+    setIsDeleting(true);
+    try {
+      // Delete products first if any
+      if (productCountInCategory > 0) {
+        await deleteProductsByCategory(deletingCategoryId);
+      }
+      // Then delete category
+      await deleteCategory(deletingCategoryId);
+      fetchCategories();
+      setDeleteModalOpen(false);
+      setDeletingCategoryId(null);
+      setDeletingCategoryName("");
+      setProductCountInCategory(0);
+    } catch (err) {
+      setError(err.message || "Failed to delete category");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Cancel delete
+  const handleCancelDelete = () => {
+    setDeleteModalOpen(false);
+    setDeletingCategoryId(null);
+    setDeletingCategoryName("");
+    setProductCountInCategory(0);
   };
 
   const handleToggleStatus = async (id, currentStatus) => {
@@ -440,7 +483,7 @@ export default function CategoriesPage() {
                         key={category._id}
                         category={category}
                         onEdit={handleOpenModal}
-                        onDelete={handleDelete}
+                        onDelete={handleDeleteClick}
                         onToggleStatus={handleToggleStatus}
                         getLanguageValue={getLanguageValue}
                       />
@@ -576,6 +619,99 @@ export default function CategoriesPage() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <div
+              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+              onClick={handleCancelDelete}
+            ></div>
+
+            <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
+              <div className="bg-white px-4 pb-4 pt-5 sm:p-6">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <svg
+                      className="h-6 w-6 text-red-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                    <h3 className="text-lg font-semibold leading-6 text-gray-900">
+                      Delete Category
+                    </h3>
+                    <div className="mt-2">
+                      {productCountInCategory > 0 ? (
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                            <svg className="h-5 w-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                            <span className="text-sm font-medium text-amber-800">
+                              This category contains {productCountInCategory} product{productCountInCategory > 1 ? 's' : ''}!
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            Deleting <strong>"{deletingCategoryName}"</strong> will permanently remove the category and <strong>all {productCountInCategory} product{productCountInCategory > 1 ? 's' : ''}</strong> in it.
+                          </p>
+                          <p className="text-sm text-red-600 font-medium">
+                            This action cannot be undone.
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-600">
+                          Are you sure you want to delete <strong>"{deletingCategoryName}"</strong>? This action cannot be undone.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-2">
+                <button
+                  type="button"
+                  onClick={handleConfirmDelete}
+                  disabled={isDeleting}
+                  className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed sm:ml-3 sm:w-auto"
+                >
+                  {isDeleting ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Deleting...
+                    </>
+                  ) : productCountInCategory > 0 ? (
+                    `Delete Category & ${productCountInCategory} Product${productCountInCategory > 1 ? 's' : ''}`
+                  ) : (
+                    'Delete Category'
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCancelDelete}
+                  disabled={isDeleting}
+                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50 sm:mt-0 sm:w-auto"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>
