@@ -27,7 +27,7 @@ const Footer = ({ error, storeCustomizationSetting }) => {
   // #endregion
 
   return (
-    <div className={`${isHomePage ? 'bg-primary-500' : 'bg-gradient-to-b from-primary-50 to-white pb-20 lg:pb-8'}`}>
+    <div className={`${isHomePage ? 'bg-primary-500 pb-[68px] sm:pb-8' : 'bg-gradient-to-b from-primary-50 to-white pb-20 lg:pb-8'}`}>
       {/* Hero Logo Section */}
       <div className="bg-primary-500 py-12 lg:py-20">
         <div className="mx-auto max-w-screen-2xl px-4 sm:px-10 flex flex-col items-center justify-center text-center">
@@ -42,7 +42,7 @@ const Footer = ({ error, storeCustomizationSetting }) => {
 
           {/* New Integrated Links - Side by Side layout for Home Page */}
           {isHomePage && (
-            <div ref={footerRef} className="flex flex-row items-center justify-center gap-2 sm:gap-3 md:gap-4 text-white/70 border-t border-white/10 pt-8 mt-4" style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap' }}>
+            <div ref={footerRef} className="flex flex-row items-center justify-center gap-2 sm:gap-3 md:gap-4 text-white/70 border-t border-white/10 pt-8 mt-4 sm:pb-0" style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap' }}>
               <span className="text-[9px] sm:text-[10px] md:text-xs font-light whitespace-nowrap inline-block">© {new Date().getFullYear()} Horeca1. All rights reserved.</span>
               <span className="text-white/30">|</span>
               <span className="text-[9px] sm:text-[10px] md:text-xs text-white/50 whitespace-nowrap inline-block">
