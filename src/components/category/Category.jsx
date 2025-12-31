@@ -12,7 +12,14 @@ const Category = ({ categories, categoryError, onClose }) => {
             <span> {categoryError}</span>
           </p>
         ) : (
-          <div className="relative grid gap-2 p-6">
+          <div className="relative grid grid-cols-4 gap-4 p-4">
+            <CategoryCard
+              key="all"
+              id={null}
+              icon="/product-header.png"
+              onClose={onClose}
+              title="All"
+            />
             {categories[0]?.children?.map((category) => (
               <CategoryCard
                 key={category._id}

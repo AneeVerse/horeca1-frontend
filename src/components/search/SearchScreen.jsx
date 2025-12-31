@@ -37,8 +37,8 @@ const SearchScreen = ({ products, attributes, categories, currency }) => {
     <div className="mx-auto max-w-screen-2xl px-3 sm:px-6 lg:px-10">
       <div className="flex py-6 sm:py-10 lg:py-12">
         <div className="flex w-full gap-3 sm:gap-4">
-          {/* Categories sidebar on left - mobile and desktop */}
-          <div className="w-20 sm:w-32 lg:w-40 flex-shrink-0 border-r border-gray-200">
+          {/* Categories sidebar on left - hidden on mobile, visible on desktop */}
+          <div className="hidden sm:block w-20 sm:w-32 lg:w-40 flex-shrink-0 border-r border-gray-200">
             <div className="sticky top-20 h-[calc(100vh-6rem)] overflow-y-auto py-2 sm:py-4">
               <ul className="flex flex-col gap-2">
                 {/* All tab with product-header image */}

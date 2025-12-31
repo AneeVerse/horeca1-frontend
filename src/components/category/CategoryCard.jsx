@@ -21,8 +21,12 @@ const CategoryCard = ({ title, icon, nested, id, onClose }) => {
 
   // ✅ Search only when clicking on the category name
   const handleSearch = (id, categoryName) => {
-    const name = categoryName.toLowerCase().replace(/[^A-Z0-9]+/gi, "-");
-    router.push(`/search?category=${name}&_id=${id}`);
+    if (!id || id === "all") {
+      router.push("/search");
+    } else {
+      const name = categoryName.toLowerCase().replace(/[^A-Z0-9]+/gi, "-");
+      router.push(`/search?category=${name}&_id=${id}`);
+    }
     if (onClose) {
       onClose();
     }
@@ -42,35 +46,33 @@ const CategoryCard = ({ title, icon, nested, id, onClose }) => {
 
   return (
     <>
-      <div className="p-2 flex items-center rounded-md hover:bg-gray-50 w-full">
-        {icon ? (
-          <Image src={icon} width={18} height={18} alt="Category" />
-        ) : (
-          <Image
-            src="https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png"
-            width={18}
-            height={18}
-            alt="category"
-          />
-        )}
-
-        {/* ✅ Clicking name = search */}
-        <div
-          onClick={() => handleSearch(id, title)}
-          className="ml-3 text-sm font-medium flex-1 cursor-pointer hover:text-primary-600"
-        >
-          {title}
+      <div
+        onClick={() => handleSearch(id, title)}
+        className="flex flex-col items-center justify-start p-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer group w-full"
+      >
+        <div className="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-full mb-2 group-hover:bg-white group-hover:shadow-sm transition-all overflow-hidden border border-gray-100">
+          {icon ? (
+            <Image
+              src={icon}
+              width={40}
+              height={40}
+              alt={title}
+              className="object-contain p-1"
+            />
+          ) : (
+            <Image
+              src="https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png"
+              width={40}
+              height={40}
+              alt="category"
+              className="object-contain p-1 opacity-50"
+            />
+          )}
         </div>
 
-        {/* ✅ Clicking arrow = expand */}
-        {nested?.length > 0 && (
-          <span
-            onClick={toggleExpand}
-            className="cursor-pointer text-gray-400 hover:text-primary-600"
-          >
-            {show ? <IoChevronDownOutline /> : <IoChevronForwardOutline />}
-          </span>
-        )}
+        <div className="text-[10px] sm:text-xs font-semibold text-gray-700 text-center leading-tight line-clamp-2 max-w-full group-hover:text-primary-600 transition-colors">
+          {title}
+        </div>
       </div>
 
       {/* Nested categories */}
@@ -99,7 +101,7 @@ const CategoryCard = ({ title, icon, nested, id, onClose }) => {
                     className="cursor-pointer text-gray-400 hover:text-primary-600"
                   >
                     {showSubCategory.id === children._id &&
-                    showSubCategory.show ? (
+                      showSubCategory.show ? (
                       <IoChevronDownOutline />
                     ) : (
                       <IoChevronForwardOutline />
