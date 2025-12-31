@@ -33,20 +33,20 @@ const Home = async () => {
   const { popularProducts = [], discountedProducts = [], error } = productsResult.status === 'fulfilled' ? productsResult.value : { popularProducts: [], discountedProducts: [], error: null };
   const { globalSetting } = globalResult.status === 'fulfilled' ? globalResult.value : { globalSetting: null };
   const { categories: allCategories } = categoriesResult.status === 'fulfilled' ? categoriesResult.value : { categories: [] };
-  
+
   const currency = globalSetting?.default_currency || "₹";
 
   // Get top 3 categories in order (already sorted by order field from backend)
   const topCategories = (allCategories[0]?.children || []).filter(cat => cat && cat._id).slice(0, 3);
-  
+
   // Fetch products for top 3 categories (in order, show even if no products)
   const productsByCategory = {};
-  
+
   for (const category of topCategories) {
     try {
-      const categoryProducts = await getShowingStoreProducts({ 
-        category: category._id, 
-        title: "" 
+      const categoryProducts = await getShowingStoreProducts({
+        category: category._id,
+        title: ""
       });
       productsByCategory[category._id] = categoryProducts.products?.slice(0, 20) || [];
     } catch (err) {
@@ -62,7 +62,7 @@ const Home = async () => {
         <div className="mx-auto py-5 max-w-screen-2xl px-3 sm:px-10">
           <div className="flex flex-col lg:flex-row w-full gap-4 lg:gap-6">
             {/* Home page main carousel */}
-            <div className="flex-shrink-0 xl:pr-6 lg:block w-full lg:w-3/5">
+            <div className="flex-shrink-0 lg:block w-full lg:w-3/5">
               <Suspense fallback={<p>Loading carousel...</p>}>
                 <MainCarousel />
               </Suspense>

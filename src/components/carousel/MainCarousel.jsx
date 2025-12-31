@@ -44,7 +44,8 @@ const MainCarousel = async () => {
       info: "",
       buttonName: "Shop Now",
       url: "/",
-      image: "/banner1.png",
+      image: "/banner1-desk.png",
+      mobileImage: "/banner1-mobile.png",
     },
     // New Banner 2
     {
@@ -53,7 +54,8 @@ const MainCarousel = async () => {
       info: "",
       buttonName: "Shop Now",
       url: "/",
-      image: "/banner2.png",
+      image: "/banner2-desk.png",
+      mobileImage: "/banner2-mobile.png",
     },
     // Old Banner 4 - Commented out per user request
     // {

@@ -69,46 +69,64 @@ const PromoTimerCard = () => {
   }, []);
 
   if (isPromoTime) {
-    // Show Promo Active Card - Clean, well-aligned design
+    // Show Promo Active Card - Master Designer Brand Teal Design
     return (
-      <div className="w-full h-auto lg:h-[180px] flex">
-        <div className="bg-gradient-to-br from-primary-600 via-primary-500 to-primary-400 w-full rounded-xl shadow-md overflow-hidden relative flex flex-col">
-          <div className="relative z-10 p-4 lg:p-5 flex flex-col gap-3">
-            {/* Title Section - Perfectly aligned */}
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/20 rounded-lg flex-shrink-0 backdrop-blur-sm shadow-sm ring-1 ring-white/10">
-                <Moon className="w-4 h-4 text-white" />
+      <div className="w-full h-full flex">
+        <div className="bg-gradient-to-br from-[#025155] via-[#025155] to-[#018549] w-full rounded-2xl shadow-[0_20px_50px_rgba(2,81,85,0.25)] overflow-hidden relative flex flex-col border border-white/10 group transition-all duration-700">
+          {/* Professional Color Grading Elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-400/5 rounded-full blur-[100px] -mr-32 -mt-32 group-hover:bg-emerald-400/10 transition-all duration-1000"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-400/5 rounded-full blur-[100px] -ml-32 -mb-32"></div>
+
+          {/* Elegant Mesh Background Pattern */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "linear-gradient(45deg, #fff 1px, transparent 1px), linear-gradient(-45deg, #fff 1px, transparent 1px)", backgroundSize: "24px 24px" }}></div>
+
+          <div className="relative z-10 p-5 lg:p-6 flex flex-col justify-between h-full">
+            {/* Title Section - Premium Brand Hierarchy */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-white/10 rounded-2xl flex-shrink-0 backdrop-blur-2xl shadow-2xl ring-1 ring-white/20 group-hover:ring-emerald-400/40 transition-all duration-500">
+                  <Moon className="w-5 h-5 text-emerald-300" />
+                </div>
+                <div>
+                  <h2 className="text-base font-black text-white leading-tight tracking-[0.08em] uppercase drop-shadow-lg">Happy Hour</h2>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                    </span>
+                    <span className="text-emerald-300 text-[10px] font-black tracking-widest uppercase">Live Now</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-sm border-none font-bold text-white leading-tight mb-0.5">Happy Hour</h2>
-                <span className="text-white/90 text-xs font-medium leading-none block">6:00 PM - 9:00 AM</span>
+              <div className="bg-white/10 px-4 py-1.5 rounded-xl border border-white/10 backdrop-blur-xl">
+                <span className="text-white font-bold text-[11px] tracking-widest">6PM - 9AM</span>
               </div>
             </div>
 
-            {/* Timer Section - Well-spaced and aligned */}
-            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 border border-white/20 shadow-sm w-full">
-              <div className="flex items-center gap-1.5 mb-2">
-                <Clock className="w-3.5 h-3.5 text-white/90 flex-shrink-0" />
-                <p className="text-white/90 text-[10px] font-bold uppercase tracking-wider leading-none">ENDS IN</p>
+            {/* Timer Section - High-End "Frosted" Finish */}
+            <div className="bg-black/10 backdrop-blur-3xl rounded-2xl p-5 border border-white/5 shadow-2xl relative overflow-hidden group/timer mt-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Zap className="w-3.5 h-3.5 text-emerald-300 animate-pulse" />
+                <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] leading-none">ENDS IN</p>
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="bg-white/20 rounded-lg py-1.5 px-1 text-center border border-white/30 backdrop-blur-sm">
-                  <span className="text-lg font-bold text-white block leading-none font-mono tracking-tight">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-white/5 rounded-xl py-3 px-1 text-center border border-white/10 shadow-lg transition-all group-hover/timer:bg-white/10">
+                  <span className="text-3xl font-black text-white block leading-none font-mono tracking-tighter drop-shadow-md">
                     {timeRemaining.hours.toString().padStart(2, "0")}
                   </span>
-                  <p className="text-white/80 text-[10px] mt-1 font-bold leading-none uppercase tracking-wide">HRS</p>
+                  <p className="text-white/30 text-[9px] mt-2 font-black leading-none uppercase tracking-widest">Hours</p>
                 </div>
-                <div className="bg-white/20 rounded-lg py-1.5 px-1 text-center border border-white/30 backdrop-blur-sm">
-                  <span className="text-lg font-bold text-white block leading-none font-mono tracking-tight">
+                <div className="bg-white/5 rounded-xl py-3 px-1 text-center border border-white/10 shadow-lg transition-all group-hover/timer:bg-white/10">
+                  <span className="text-3xl font-black text-white block leading-none font-mono tracking-tighter drop-shadow-md">
                     {timeRemaining.minutes.toString().padStart(2, "0")}
                   </span>
-                  <p className="text-white/80 text-[10px] mt-1 font-bold leading-none uppercase tracking-wide">MIN</p>
+                  <p className="text-white/30 text-[9px] mt-2 font-black leading-none uppercase tracking-widest">Min</p>
                 </div>
-                <div className="bg-white/20 rounded-lg py-1.5 px-1 text-center border border-white/30 backdrop-blur-sm">
-                  <span className="text-lg font-bold text-white block leading-none font-mono tracking-tight">
+                <div className="bg-white/20 rounded-xl py-3 px-1 text-center border border-emerald-400/30 shadow-lg transition-all group-hover/timer:bg-white/30">
+                  <span className="text-3xl font-black text-emerald-300 block leading-none font-mono tracking-tighter drop-shadow-[0_0_15px_rgba(110,231,183,0.4)]">
                     {timeRemaining.seconds.toString().padStart(2, "0")}
                   </span>
-                  <p className="text-white/80 text-[10px] mt-1 font-bold leading-none uppercase tracking-wide">SEC</p>
+                  <p className="text-emerald-300/60 text-[9px] mt-2 font-black leading-none uppercase tracking-widest font-bold">Sec</p>
                 </div>
               </div>
             </div>
@@ -118,46 +136,57 @@ const PromoTimerCard = () => {
     );
   }
 
-  // Show "Promo Starting Soon" Card - Clean, well-aligned design
+  // Show "Promo Starting Soon" Card - Brand Teal Design
   return (
-    <div className="w-full h-auto lg:h-[180px] flex">
-      <div className="bg-gradient-to-br from-white via-primary-50 to-primary-100 w-full rounded-xl shadow-md border border-primary-100 overflow-hidden relative flex flex-col">
-        <div className="relative z-10 p-4 lg:p-5 flex flex-col gap-3">
-          {/* Title Section - Perfectly aligned */}
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary-100 rounded-lg flex-shrink-0 shadow-sm ring-1 ring-primary-200">
-              <Moon className="w-4 h-4 text-primary-600" />
+    <div className="w-full h-full flex">
+      <div className="bg-[#025155] w-full rounded-2xl shadow-xl overflow-hidden relative flex flex-col border border-white/5 group transition-all duration-500">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl"></div>
+
+        <div className="relative z-10 p-5 lg:p-6 flex flex-col justify-between h-full">
+          {/* Title Section */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/5 rounded-2xl flex-shrink-0 border border-white/10">
+                <Clock className="w-5 h-5 text-white/30" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-white/90 leading-tight tracking-[0.05em] uppercase">Happy Hour</h2>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-white/20 animate-pulse"></div>
+                  <span className="text-white/40 text-[10px] font-bold tracking-widest uppercase text-center">Starts 6PM</span>
+                </div>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <h2 className="text-sm border-none font-bold text-gray-800 leading-tight mb-0.5">Happy Hour</h2>
-              <span className="text-gray-600 text-xs font-medium leading-none block">6:00 PM - 9:00 AM</span>
+            <div className="bg-white/5 px-3 py-1.5 rounded-xl border border-white/10">
+              <span className="text-white/30 font-bold text-[10px] tracking-widest uppercase">Upcoming</span>
             </div>
           </div>
 
-          {/* Timer Section - Well-spaced and aligned */}
-          <div className="bg-white rounded-xl p-3 border border-primary-100 shadow-sm w-full">
-            <div className="flex items-center gap-1.5 mb-2">
-              <Clock className="w-3.5 h-3.5 text-primary-500 flex-shrink-0" />
-              <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider leading-none">STARTS IN</p>
+          {/* Timer Section */}
+          <div className="bg-black/20 rounded-2xl p-5 border border-white/5 relative overflow-hidden mt-4 shadow-inner">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="h-[1px] w-8 bg-white/5"></div>
+              <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em] leading-none">COMING SOON</p>
+              <div className="h-[1px] w-8 bg-white/5"></div>
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="bg-primary-600 rounded-lg py-1.5 px-1 text-center border border-primary-700 shadow-sm">
-                <span className="text-lg font-bold text-white block leading-none font-mono tracking-tight">
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-white/5 rounded-xl py-3.5 px-1 text-center border border-white/5 shadow-lg">
+                <span className="text-2xl font-black text-white/60 block leading-none font-mono tracking-tighter">
                   {timeRemaining.hours.toString().padStart(2, "0")}
                 </span>
-                <p className="text-primary-100 text-[10px] mt-1 font-bold leading-none uppercase tracking-wide">HRS</p>
+                <p className="text-white/20 text-[8px] mt-2 font-bold uppercase tracking-widest text-center">Hours</p>
               </div>
-              <div className="bg-primary-600 rounded-lg py-1.5 px-1 text-center border border-primary-700 shadow-sm">
-                <span className="text-lg font-bold text-white block leading-none font-mono tracking-tight">
+              <div className="bg-white/5 rounded-xl py-3.5 px-1 text-center border border-white/5 shadow-lg">
+                <span className="text-2xl font-black text-white/60 block leading-none font-mono tracking-tighter">
                   {timeRemaining.minutes.toString().padStart(2, "0")}
                 </span>
-                <p className="text-primary-100 text-[10px] mt-1 font-bold leading-none uppercase tracking-wide">MIN</p>
+                <p className="text-white/20 text-[8px] mt-2 font-bold uppercase tracking-widest text-center">Min</p>
               </div>
-              <div className="bg-primary-600 rounded-lg py-1.5 px-1 text-center border border-primary-700 shadow-sm">
-                <span className="text-lg font-bold text-white block leading-none font-mono tracking-tight">
+              <div className="bg-white/5 rounded-xl py-3.5 px-1 text-center border border-white/10 shadow-lg">
+                <span className="text-2xl font-black text-white/20 block leading-none font-mono tracking-tighter">
                   {timeRemaining.seconds.toString().padStart(2, "0")}
                 </span>
-                <p className="text-primary-100 text-[10px] mt-1 font-bold leading-none uppercase tracking-wide">SEC</p>
+                <p className="text-white/20 text-[8px] mt-2 font-bold uppercase tracking-widest text-center">Sec</p>
               </div>
             </div>
           </div>
