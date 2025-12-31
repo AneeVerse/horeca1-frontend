@@ -66,16 +66,18 @@ const FooterContent = ({ storeCustomizationSetting }) => {
         </div>
       )}
 
-      {/* Bottom Bar - Always visible */}
-      <div className={`border-t border-gray-200 py-6 flex flex-col items-center justify-center text-center lg:flex-row lg:justify-between lg:text-left text-xs text-gray-500 space-y-4 lg:space-y-0 lg:gap-4 ${isHomePage ? 'pt-6' : ''}`}>
-        <p className="lg:order-1">© {new Date().getFullYear()} Horeca1. All rights reserved.</p>
-        <div className="lg:order-2 flex items-center justify-center gap-3 lg:gap-4">
-          <Link href="/pages/privacy-policy" className="hover:text-primary-600 transition-colors">Privacy Policy</Link>
-          <span className="text-gray-300">|</span>
-          <Link href="/pages/terms-and-conditions" className="hover:text-primary-600 transition-colors">Terms of Service</Link>
+      {/* Bottom Bar - Always visible EXCEPT on home page (moved to green section) */}
+      {!isHomePage && (
+        <div className={`border-t border-gray-200 py-6 flex flex-col items-center justify-center text-center lg:flex-row lg:justify-between lg:text-left text-xs text-gray-500 space-y-4 lg:space-y-0 lg:gap-4 ${isHomePage ? 'pt-6' : ''}`}>
+          <p className="lg:order-1">© {new Date().getFullYear()} Horeca1. All rights reserved.</p>
+          <div className="lg:order-2 flex items-center justify-center gap-3 lg:gap-4">
+            <Link href="/pages/privacy-policy" className="hover:text-primary-600 transition-colors">Privacy Policy</Link>
+            <span className="text-gray-300">|</span>
+            <Link href="/pages/terms-and-conditions" className="hover:text-primary-600 transition-colors">Terms of Service</Link>
+          </div>
+          <p className="lg:order-3 text-gray-400">Designed & Managed by <span className="text-primary-600 font-medium">Aneeverse</span></p>
         </div>
-        <p className="lg:order-3 text-gray-400">Designed & Managed by <span className="text-primary-600 font-medium">Aneeverse</span></p>
-      </div>
+      )}
     </div>
   );
 };
