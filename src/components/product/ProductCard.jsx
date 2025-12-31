@@ -399,75 +399,12 @@ const ProductCard = ({ product, attributes }) => {
             </button>
           </div>
 
-          {/* Cart quantity indicator on image */}
-          {inCart(product._id) && (
-            <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 z-10">
-              {items.map(
-                (item) =>
-                  item.id === product._id && (
-                    <div
-                      key={item.id}
-                      className="flex flex-col w-8 h-16 sm:w-10 sm:h-20 items-center p-0.5 sm:p-1 justify-between bg-[#018549] text-white ring-1 sm:ring-2 ring-white rounded-full shadow-lg"
-                    >
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          item?.variants?.length > 0
-                            ? handleAddItem(item)
-                            : handleIncrementQuantity(item, e);
-                        }}
-                      >
-                        <span className="text-sm sm:text-lg cursor-pointer">
-                          <IoAdd />
-                        </span>
-                      </button>
-                      <input
-                        type="text"
-                        value={quantityInputs[item.id] !== undefined ? quantityInputs[item.id] : item.quantity}
-                        onChange={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleQuantityInputChange(item.id, e.target.value);
-                        }}
-                        onBlur={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleQuantityInputBlur(item);
-                        }}
-                        onKeyDown={(e) => {
-                          e.stopPropagation();
-                          handleQuantityInputKeyDown(item, e);
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        className="quantity-input font-semibold text-center bg-transparent border-none outline-none focus:bg-transparent rounded text-white focus:text-white"
-                        style={{ color: '#ffffff' }}
-                      />
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleDecrementQuantity(item, e);
-                        }}
-                      >
-                        <span className="text-sm sm:text-lg cursor-pointer">
-                          <IoRemove />
-                        </span>
-                      </button>
-                    </div>
-                  )
-              )}
-            </div>
-          )}
         </div>
 
         {/* product info start */}
         <div className="flex flex-1 flex-col px-2 sm:px-3 pt-1.5 sm:pt-2 pb-2 sm:pb-3">
           {/* Product Title */}
-          <div className="text-xs sm:text-sm font-semibold text-gray-800 line-clamp-2 leading-tight sm:leading-snug mb-0.5">
+          <div className="h-10 sm:h-12 text-xs sm:text-sm font-semibold text-gray-800 line-clamp-2 leading-tight sm:leading-snug mb-0.5">
             {showingTranslateValue(product?.title)}
           </div>
 
@@ -568,37 +505,98 @@ const ProductCard = ({ product, attributes }) => {
 
           {/* Price and Add Button Row */}
           <div className="flex items-center justify-between mt-auto pt-1 sm:pt-1.5 gap-2">
-            <div className="flex flex-col min-w-0 flex-1">
+            <div className="flex flex-col min-w-max">
               {isPromoTime && product?.promoPricing?.singleUnit > 0 ? (
-                <>
-                  <div className="flex items-center gap-1 sm:gap-1.5">
-                    <span className="text-[9px] sm:text-xs font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-400 px-1 sm:px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap">PROMO</span>
-                    <span className="text-sm sm:text-base font-bold text-primary-600 truncate">
-                      {currency}{product.promoPricing.singleUnit}
-                      {product?.unit && <span className="text-[10px] sm:text-xs font-normal text-primary-500">/{product.unit}</span>}
-                    </span>
-                  </div>
-                </>
+                <div className="flex flex-col">
+                  <span className="text-[9px] sm:text-xs font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-400 px-1.5 py-0.5 rounded shadow-sm w-fit mb-0.5">PROMO</span>
+                  <span className="text-sm sm:text-base font-bold text-primary-600">
+                    {currency}{product.promoPricing.singleUnit}
+                    {product?.unit && <span className="text-[10px] sm:text-xs font-normal text-primary-500">/{product.unit}</span>}
+                  </span>
+                </div>
               ) : (
-                <span className="text-sm sm:text-base font-bold text-gray-900 truncate">
+                <span className="text-sm sm:text-base font-bold text-gray-900">
                   {currency}{product?.isCombination ? product?.variants[0]?.price : product?.prices?.price}
                   {product?.unit && <span className="text-[10px] sm:text-xs font-normal text-gray-400">/{product.unit}</span>}
                 </span>
               )}
             </div>
 
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                // Regular add button: always adds 1 (promo pricing handled by price calculation)
-                handleAddItem(product, 1, false);
-              }}
-              className="flex items-center gap-0.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md font-semibold text-[10px] sm:text-xs transition-colors border border-transparent bg-[#018549] text-white hover:bg-[#016d3b] flex-shrink-0"
-            >
-              ADD
-              <span className="text-white text-xs sm:text-sm leading-none">+</span>
-            </button>
+            <div className="flex-shrink-0 ml-auto">
+              {inCart(product._id) ? (
+                items.map(
+                  (item) =>
+                    item.id === product._id && (
+                      <div
+                        key={item.id}
+                        className="flex items-center h-7 sm:h-8 bg-white border border-gray-200 rounded-md overflow-hidden shadow-sm"
+                      >
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDecrementQuantity(item, e);
+                          }}
+                          className="w-6 sm:w-7 h-full flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors border-r border-gray-100"
+                        >
+                          <IoRemove size={12} />
+                        </button>
+
+                        <div className="w-6 sm:w-8 h-full flex items-center justify-center">
+                          <input
+                            type="text"
+                            value={quantityInputs[item.id] !== undefined ? quantityInputs[item.id] : item.quantity}
+                            onChange={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleQuantityInputChange(item.id, e.target.value);
+                            }}
+                            onBlur={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleQuantityInputBlur(item);
+                            }}
+                            onKeyDown={(e) => {
+                              e.stopPropagation();
+                              handleQuantityInputKeyDown(item, e);
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }}
+                            className="w-full h-full text-center bg-transparent border-none outline-none focus:ring-0 text-[10px] sm:text-xs font-bold text-gray-800 p-0"
+                          />
+                        </div>
+
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            item?.variants?.length > 0
+                              ? handleAddItem(item)
+                              : handleIncrementQuantity(item, e);
+                          }}
+                          className="w-6 sm:w-7 h-full flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors border-l border-gray-100"
+                        >
+                          <IoAdd size={12} />
+                        </button>
+                      </div>
+                    )
+                )
+              ) : (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAddItem(product, 1, false);
+                  }}
+                  className="flex items-center gap-0.5 px-3 sm:px-5 py-1.5 sm:py-2 rounded-md font-semibold text-[10px] sm:text-xs transition-colors border border-transparent bg-[#018549] text-white hover:bg-[#016d3b] flex-shrink-0"
+                >
+                  ADD
+                  <span className="text-white text-xs sm:text-sm leading-none ml-1">+</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
         {/* product info end */}
