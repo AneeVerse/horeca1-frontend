@@ -32,6 +32,7 @@ import {
 import { FaStar } from "react-icons/fa6";
 import MainModal from "./MainModal";
 import Image from "next/image";
+import { notifyError } from "@utils/toast";
 
 const ProductModal = ({
   product,
@@ -147,8 +148,8 @@ const ProductModal = ({
                 </span>
               </div>
 
-              {/* Bulk Pricing Display - Only show when NOT promo time */}
-              {!isPromoTime && product?.bulkPricing && (product?.bulkPricing?.bulkRate1?.quantity > 0 || product?.bulkPricing?.bulkRate2?.quantity > 0) && (
+              {/* Bulk Pricing Display - Always show regular bulk pricing */}
+              {product?.bulkPricing && (product?.bulkPricing?.bulkRate1?.quantity > 0 || product?.bulkPricing?.bulkRate2?.quantity > 0) && (
                 <div className="bg-gray-50 rounded-lg p-3 mb-4 space-y-2">
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">Bulk Pricing</h4>
                   {product?.bulkPricing?.bulkRate1?.quantity > 0 && product?.bulkPricing?.bulkRate1?.pricePerUnit > 0 && (
@@ -194,8 +195,8 @@ const ProductModal = ({
                 </div>
               )}
 
-              {/* Promo Bulk Pricing Display (6pm-9am) - Only show during promo time */}
-              {isPromoTime && product?.promoPricing && (product?.promoPricing?.singleUnit > 0 || product?.promoPricing?.bulkRate1?.quantity > 0 || product?.promoPricing?.bulkRate2?.quantity > 0) && (
+              {/* Promo Bulk Pricing Display (6pm-9am) - Always show Happy Hour teaser */}
+              {product?.promoPricing && (product?.promoPricing?.singleUnit > 0 || product?.promoPricing?.bulkRate1?.quantity > 0 || product?.promoPricing?.bulkRate2?.quantity > 0) && (
                 <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-3 mb-4 space-y-2 border border-primary-200/50">
                   <h4 className="text-sm font-semibold text-primary-700 mb-2 flex items-center gap-2">
                     <span className="text-xs font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-400 px-2 py-0.5 rounded">PROMO</span>
@@ -222,6 +223,9 @@ const ProductModal = ({
                         </span>
                         <button
                           onClick={() => {
+                            if (!isPromoTime) {
+                              return notifyError("Come at 6pm to get this offer!");
+                            }
                             setItem(product.promoPricing.bulkRate1.quantity);
                           }}
                           className="text-xs font-semibold text-white bg-[#018549] hover:bg-[#016d3b] px-3 py-1 rounded transition-colors"
@@ -242,6 +246,9 @@ const ProductModal = ({
                         </span>
                         <button
                           onClick={() => {
+                            if (!isPromoTime) {
+                              return notifyError("Come at 6pm to get this offer!");
+                            }
                             setItem(product.promoPricing.bulkRate2.quantity);
                           }}
                           className="text-xs font-semibold text-white bg-[#018549] hover:bg-[#016d3b] px-3 py-1 rounded transition-colors"
