@@ -515,67 +515,65 @@ const ProductCard = ({ product, attributes }) => {
             </div>
 
             <div className="flex-shrink-0 ml-auto">
-              {inCart(product._id) ? (
-                items.map(
-                  (item) =>
-                    item.id === product._id && (
-                      <div
-                        key={item.id}
-                        className="flex items-center h-7 sm:h-8 bg-white border border-gray-200 rounded-md overflow-hidden shadow-sm"
-                      >
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleDecrementQuantity(item, e);
-                          }}
-                          className="w-6 sm:w-7 h-full flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors border-r border-gray-100"
-                        >
-                          <IoRemove size={12} />
-                        </button>
+              {inCart(product._id) ? (() => {
+                const cartItem = items.find((item) => item.id === product._id);
+                return cartItem ? (
+                  <div
+                    key={cartItem.id}
+                    className="flex items-center h-7 sm:h-8 bg-white border border-gray-200 rounded-md overflow-hidden shadow-sm"
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDecrementQuantity(cartItem, e);
+                      }}
+                      className="w-6 sm:w-7 h-full flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors border-r border-gray-100"
+                    >
+                      <IoRemove size={12} />
+                    </button>
 
-                        <div className="w-6 sm:w-8 h-full flex items-center justify-center">
-                          <input
-                            type="text"
-                            value={quantityInputs[item.id] !== undefined ? quantityInputs[item.id] : item.quantity}
-                            onChange={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleQuantityInputChange(item.id, e.target.value);
-                            }}
-                            onBlur={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleQuantityInputBlur(item);
-                            }}
-                            onKeyDown={(e) => {
-                              e.stopPropagation();
-                              handleQuantityInputKeyDown(item, e);
-                            }}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                            }}
-                            className="w-full h-full text-center bg-transparent border-none outline-none focus:ring-0 text-[10px] sm:text-xs font-bold text-gray-800 p-0"
-                          />
-                        </div>
+                    <div className="w-6 sm:w-8 h-full flex items-center justify-center">
+                      <input
+                        type="text"
+                        value={quantityInputs[cartItem.id] !== undefined ? quantityInputs[cartItem.id] : cartItem.quantity}
+                        onChange={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleQuantityInputChange(cartItem.id, e.target.value);
+                        }}
+                        onBlur={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleQuantityInputBlur(cartItem);
+                        }}
+                        onKeyDown={(e) => {
+                          e.stopPropagation();
+                          handleQuantityInputKeyDown(cartItem, e);
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        className="w-full h-full text-center bg-transparent border-none outline-none focus:ring-0 text-[10px] sm:text-xs font-bold text-gray-800 p-0"
+                      />
+                    </div>
 
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            item?.variants?.length > 0
-                              ? handleAddItem(item)
-                              : handleIncrementQuantity(item, e);
-                          }}
-                          className="w-6 sm:w-7 h-full flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors border-l border-gray-100"
-                        >
-                          <IoAdd size={12} />
-                        </button>
-                      </div>
-                    )
-                )
-              ) : (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        cartItem?.variants?.length > 0
+                          ? handleAddItem(cartItem)
+                          : handleIncrementQuantity(cartItem, e);
+                      }}
+                      className="w-6 sm:w-7 h-full flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors border-l border-gray-100"
+                    >
+                      <IoAdd size={12} />
+                    </button>
+                  </div>
+                ) : null;
+              })() : (
                 <button
                   onClick={(e) => {
                     e.preventDefault();

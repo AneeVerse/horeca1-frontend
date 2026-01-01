@@ -24,7 +24,7 @@ import useProductAction from "@hooks/useProductAction";
 import MainModal from "./MainModal";
 import Image from "next/image";
 import Link from "next/link";
-import { notifyError } from "@utils/toast";
+import { notifyError, notifySuccess } from "@utils/toast";
 import { FiMinus, FiPlus } from "react-icons/fi";
 
 const ProductModal = ({
@@ -37,7 +37,16 @@ const ProductModal = ({
     const { showingTranslateValue, getNumber, getNumberTwo } = useUtilsFunction();
     const currency = globalSetting?.default_currency || "₹";
     const { item, setItem, handleAddToCart } = useAddToCart();
+    const { items, updateItemQuantity, addItem, removeItem } = useCart();
+    const router = useRouter();
+    const pathname = usePathname();
     const [isPromoTime, setIsPromoTime] = useState(false);
+    const [quantityInput, setQuantityInput] = useState(item.toString());
+
+    // Sync quantityInput with item when item changes externally (e.g., from buttons)
+    useEffect(() => {
+        setQuantityInput(item.toString());
+    }, [item]);
 
     useEffect(() => {
         const checkPromoTime = () => {
@@ -123,6 +132,161 @@ const ProductModal = ({
         return null;
     };
 
+    // Helper function to calculate price based on quantity and bulk/promo pricing
+    const getPriceForQuantity = (productData, totalQuantity) => {
+        // Check promo pricing first if promo time
+        if (isPromoTime && productData?.promoPricing) {
+            if (productData.promoPricing?.bulkRate2?.quantity > 0 && totalQuantity >= productData.promoPricing.bulkRate2.quantity) {
+                return productData.promoPricing.bulkRate2.pricePerUnit;
+            }
+            if (productData.promoPricing?.bulkRate1?.quantity > 0 && totalQuantity >= productData.promoPricing.bulkRate1.quantity) {
+                return productData.promoPricing.bulkRate1.pricePerUnit;
+            }
+            if (productData.promoPricing?.singleUnit > 0) {
+                return productData.promoPricing.singleUnit;
+            }
+        }
+        
+        // Use bulkPricing
+        if (productData?.bulkPricing?.bulkRate2?.quantity > 0 && totalQuantity >= productData.bulkPricing.bulkRate2.quantity) {
+            return productData.bulkPricing.bulkRate2.pricePerUnit;
+        }
+        if (productData?.bulkPricing?.bulkRate1?.quantity > 0 && totalQuantity >= productData.bulkPricing.bulkRate1.quantity) {
+            return productData.bulkPricing.bulkRate1.pricePerUnit;
+        }
+        // Default to current price
+        return price || productData?.prices?.price || 0;
+    };
+
+    // Helper function to prepare cart item
+    const prepareCartItem = (productData, quantity, calculatedPrice) => {
+        const { variants, categories, description, ...updatedProduct } = productData;
+        const baseProductId = productData.id || productData._id;
+        
+        // Handle variants - check if product has variants and if all are selected
+        const hasVariants = productData?.variants?.length > 0;
+        const selectedVariantName = variantTitle
+            ?.map((att) =>
+                att?.variants?.find((v) => v._id === selectVariant[att._id])
+            )
+            .map((el) => showingTranslateValue(el?.name));
+        
+        // Determine product ID - with variant suffix if variants exist
+        let productId;
+        let productTitle;
+        
+        if (hasVariants) {
+            // Check if all variants are selected
+            const allVariantsSelected = variantTitle?.length > 0 && 
+                variantTitle.every((att) => selectVariant[att._id]);
+            
+            if (!allVariantsSelected) {
+                // Variants not fully selected - return null to prevent adding
+                return null;
+            }
+            
+            // Build variant ID suffix
+            const variantSuffix = variantTitle?.map((att) => selectVariant[att._id]).join("-");
+            productId = baseProductId + "-" + variantSuffix;
+            productTitle = showingTranslateValue(productData?.title) + "-" + selectedVariantName?.join("-");
+        } else {
+            productId = baseProductId;
+            productTitle = showingTranslateValue(productData?.title);
+        }
+        
+        return {
+            ...updatedProduct,
+            id: productId,
+            title: productTitle,
+            price: calculatedPrice,
+            originalPrice: originalPrice || productData?.prices?.originalPrice || productData?.prices?.price,
+            bulkPricing: productData.bulkPricing,
+            promoPricing: productData.promoPricing,
+            sku: productData.sku,
+            hsn: productData.hsn,
+            unit: productData.unit,
+            brand: productData.brand,
+            taxPercent: productData.taxPercent || 0,
+            taxableRate: productData.taxableRate || 0,
+            image: selectedImage || productData.image?.[0],
+            variant: hasVariants ? selectVariant : {},
+        };
+    };
+
+    // Add or update cart when quantity changes
+    useEffect(() => {
+        if (!modalOpen || (!product?._id && !product?.id) || item < 1) return;
+        
+        // Check authentication before adding/updating cart
+        const userInfoCookie = Cookies.get("userInfo");
+        if (!userInfoCookie) {
+            // Redirect to login page with current page as redirectUrl
+            router.push(`/auth/otp-login?redirectUrl=${encodeURIComponent(pathname)}`);
+            return;
+        }
+        
+        // Check if product has variants and if all are selected
+        const hasVariants = product?.variants?.length > 0;
+        if (hasVariants) {
+            const allVariantsSelected = variantTitle?.length > 0 && 
+                variantTitle.every((att) => selectVariant[att._id]);
+            if (!allVariantsSelected) {
+                // Don't add to cart if variants not fully selected
+                return;
+            }
+        }
+        
+        // Prepare cart item to get the correct product ID (with variant suffix if applicable)
+        const calculatedPrice = getPriceForQuantity(product, item);
+        const preparedItem = prepareCartItem(product, item, calculatedPrice);
+        
+        if (!preparedItem) {
+            // Variants not selected or other issue
+            return;
+        }
+        
+        const productId = preparedItem.id;
+        const cartItem = items.find((cartItem) => cartItem.id === productId);
+        
+        // Validate stock
+        const availableStock = product?.variants?.length > 0 
+            ? (selectVariant?.quantity || product?.variant?.quantity || product?.stock || 0)
+            : (stock || product?.stock || product?.quantity || 0);
+        
+        if (item > availableStock) {
+            notifyError("Insufficient stock!");
+            setItem(Math.max(1, availableStock));
+            return;
+        }
+        
+        if (cartItem) {
+            // Product is in cart - update quantity/price
+            if (item === cartItem.quantity) return; // No change needed
+            
+            const newPrice = getPriceForQuantity(product, item);
+            const priceChanged = Math.abs(cartItem.price - newPrice) > 0.01;
+            
+            if (priceChanged) {
+                // Price changed - remove and re-add with new price and quantity
+                removeItem(cartItem.id);
+                requestAnimationFrame(() => {
+                    const newCartItem = prepareCartItem(product, item, newPrice);
+                    if (newCartItem) {
+                        addItem(newCartItem, item);
+                    }
+                });
+            } else {
+                // Price stays the same, just update quantity
+                updateItemQuantity(cartItem.id, item);
+            }
+        } else {
+            // Product is NOT in cart - add to cart (only show notification on initial add)
+            if (preparedItem) {
+                addItem(preparedItem, item);
+                // Only show success notification when adding for the first time, not on updates
+            }
+        }
+    }, [item, modalOpen, product, items, isPromoTime, price, originalPrice, showingTranslateValue, removeItem, addItem, updateItemQuantity, stock, selectVariant, selectedImage, router, pathname, variantTitle]);
 
     return (
         <MainModal
@@ -197,7 +361,48 @@ const ProductModal = ({
                                 >
                                     <FiMinus className="text-dark text-lg" />
                                 </button>
-                                <p className="font-semibold text-sm px-3 min-w-[2.5rem] text-center">{item}</p>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max={product.quantity || 9999}
+                                    value={quantityInput}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setQuantityInput(value); // Update local state immediately for responsive typing
+                                        
+                                        const numValue = parseInt(value, 10);
+                                        if (value === '' || isNaN(numValue)) {
+                                            // Allow empty or invalid input while typing
+                                            return;
+                                        }
+                                        if (numValue >= 1) {
+                                            const maxQuantity = product.quantity || 9999;
+                                            setItem(Math.min(numValue, maxQuantity));
+                                        } else if (numValue < 1) {
+                                            setItem(1);
+                                        }
+                                    }}
+                                    onBlur={(e) => {
+                                        const value = e.target.value;
+                                        const numValue = parseInt(value, 10);
+                                        if (value === '' || isNaN(numValue) || numValue < 1) {
+                                            setItem(1);
+                                            setQuantityInput('1');
+                                        } else {
+                                            const maxQuantity = product.quantity || 9999;
+                                            const finalValue = Math.min(numValue, maxQuantity);
+                                            setItem(finalValue);
+                                            setQuantityInput(finalValue.toString());
+                                        }
+                                    }}
+                                    onKeyDown={(e) => {
+                                        // Allow backspace, delete, arrow keys, etc.
+                                        if (e.key === 'Enter') {
+                                            e.target.blur();
+                                        }
+                                    }}
+                                    className="font-semibold text-sm px-3 min-w-[2.5rem] text-center border-0 outline-none focus:outline-none focus:ring-0 bg-transparent [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                                />
                                 <button
                                     onClick={() => setItem(item + 1)}
                                     disabled={product.quantity <= item}
