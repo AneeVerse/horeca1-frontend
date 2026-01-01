@@ -89,22 +89,17 @@ const PromoTimerCard = () => {
                 </div>
                 <div>
                   <h2 className="text-[15px] lg:text-[24px] font-black text-white leading-tight tracking-[0.08em] drop-shadow-lg lg:max-w-none">DAILY DISCOUNTS 6 Pm - 9 Am</h2>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
-                    </span>
-                    <span className="text-emerald-300 text-[8px] lg:text-[10px] font-black tracking-widest uppercase">Live Now</span>
-                  </div>
                 </div>
               </div>
             </div>
 
             {/* Timer Section - Minimalist View */}
             <div className="relative group/timer mt-3 lg:mt-8">
-              <div className="flex items-center gap-1.5 mb-3 lg:mb-4 px-2">
+              <div className="flex items-center justify-center gap-1.5 mb-3 lg:mb-4 px-2">
+                <div className="h-[1px] w-6 bg-white/10"></div>
                 <Zap className="w-3 h-3 text-emerald-300 animate-pulse" />
                 <p className="text-white/40 text-[8px] lg:text-[10px] font-black tracking-[0.3em] leading-none">END IN</p>
+                <div className="h-[1px] w-6 bg-white/10"></div>
               </div>
               <div className="grid grid-cols-3 gap-2 lg:gap-4">
                 <div className="bg-white/5 rounded-lg py-2.5 lg:py-6 px-2 lg:px-3 text-center border border-white/10 shadow-lg transition-all group-hover/timer:bg-white/10">
