@@ -170,6 +170,34 @@ const CheckoutCartScreen = () => {
                 )}
               </form>
 
+              {/* Total Savings Box - Inspired by image */}
+              <div className="mb-6 bg-[#eff6ff] rounded-xl overflow-hidden shadow-sm border border-blue-100 relative">
+                {/* Wavy Top Border Effect */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-repeat-x" style={{ backgroundImage: 'radial-gradient(circle at 5px -2px, transparent 6px, #eff6ff 0px)', backgroundSize: '10px 10px' }}></div>
+
+                <div className="p-4 pt-5">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-blue-700 font-bold text-sm">Your total savings</span>
+                    <span className="text-blue-700 font-bold text-base">{currency}{pricingBreakdown.savings.toFixed(0)}</span>
+                  </div>
+
+                  {!pricingBreakdown.isFreeDelivery && (
+                    <p className="text-[11px] text-blue-500 font-medium leading-normal">
+                      Shop for {currency}{(pricingBreakdown.deliveryThreshold - cartTotal).toFixed(0)} more to <span className="text-blue-700 font-bold italic underline decoration-blue-300">save {currency}{pricingBreakdown.standardDeliveryCharge}</span> on delivery charge
+                    </p>
+                  )}
+
+                  {pricingBreakdown.isFreeDelivery && (
+                    <p className="text-[11px] text-[#018549] font-bold flex items-center gap-1 mt-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      Free delivery applied!
+                    </p>
+                  )}
+                </div>
+              </div>
+
               {/* Price Breakdown */}
               <div className="space-y-3">
                 {/* Item Total */}
@@ -231,17 +259,7 @@ const CheckoutCartScreen = () => {
                   </div>
                 </div>
 
-                {/* Free delivery hint */}
-                {!pricingBreakdown.isFreeDelivery && (
-                  <div className="bg-blue-50 rounded-lg px-3 py-2 mt-2">
-                    <p className="text-xs text-blue-700 flex items-center gap-1">
-                      <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      Add {currency}{(pricingBreakdown.deliveryThreshold - cartTotal).toFixed(0)} more to get FREE delivery!
-                    </p>
-                  </div>
-                )}
+                {/* End Price Breakdown */}
               </div>
             </div>
 
