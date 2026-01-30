@@ -169,12 +169,38 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
       const shippingNum = parseFloat(shippingCost) || 0;
       const discountNum = parseFloat(discountAmount) || 0;
       const finalTotal = cartTotalNum + shippingNum - discountNum;
+
+      // Calculate GST breakdown (same logic as CheckoutForm pricingBreakdown)
+      let totalTaxAmount = 0;
+      let totalTaxableAmount = 0;
+      items.forEach(item => {
+        const quantity = item.quantity || 1;
+        const taxPercent = parseFloat(item.taxPercent) || 0;
+        const itemCurrentPriceGross = parseFloat(item.price) || 0;
+        const itemGrossTotal = itemCurrentPriceGross * quantity;
+
+        let itemTaxableAmount, itemGstAmount;
+        if (item.taxableRate && item.taxableRate > 0) {
+          // Use stored taxableRate
+          itemTaxableAmount = item.taxableRate * quantity;
+          itemGstAmount = itemGrossTotal - itemTaxableAmount;
+        } else {
+          // Fallback: Taxable = Gross / (1 + Tax/100)
+          itemTaxableAmount = itemGrossTotal / (1 + taxPercent / 100);
+          itemGstAmount = itemGrossTotal - itemTaxableAmount;
+        }
+        totalTaxableAmount += itemTaxableAmount;
+        totalTaxAmount += itemGstAmount;
+      });
+
       console.log("Submit Handler - Total calculation:", {
         cartTotal, cartTotalNum,
         shippingCost, shippingNum,
         discountAmount, discountNum,
         totalState: total,
-        calculatedTotal: finalTotal
+        calculatedTotal: finalTotal,
+        totalGst: totalTaxAmount,
+        taxableSubtotal: totalTaxableAmount
       });
 
       // Log cart items structure to verify product details are included
@@ -204,6 +230,8 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
         shippingCost: shippingCost,
         discount: discountAmount,
         total: finalTotal > 0 ? finalTotal : cartTotal, // Use calculated total or fallback to cartTotal
+        totalGst: totalTaxAmount, // Pass the calculated GST to the order
+        taxableSubtotal: totalTaxableAmount, // Pass the taxable amount
       };
 
       // Get customer ID - check both id and _id

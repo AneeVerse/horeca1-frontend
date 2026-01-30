@@ -92,6 +92,38 @@ const InvoicePDF = ({ data, globalSetting }) => {
   const currency = currencySymbol === "₹" ? "Rs." : currencySymbol;
   const getNumberTwo = (num) => (!num ? "0.00" : Number(num).toFixed(2));
 
+  // Calculate GST breakdown (same logic as checkout pricingBreakdown)
+  const pricingBreakdown = React.useMemo(() => {
+    let totalGst = 0;
+    let taxableSubtotal = 0;
+
+    (data?.cart || []).forEach(item => {
+      const quantity = item.quantity || 1;
+      const taxPercent = parseFloat(item.taxPercent) || 0;
+      const itemCurrentPriceGross = parseFloat(item.price) || 0;
+      const itemGrossTotal = itemCurrentPriceGross * quantity;
+
+      let itemTaxableAmount, itemGstAmount;
+      if (item.taxableRate && item.taxableRate > 0) {
+        // Use stored taxableRate
+        itemTaxableAmount = item.taxableRate * quantity;
+        itemGstAmount = itemGrossTotal - itemTaxableAmount;
+      } else {
+        // Fallback: Taxable = Gross / (1 + Tax/100)
+        itemTaxableAmount = itemGrossTotal / (1 + taxPercent / 100);
+        itemGstAmount = itemGrossTotal - itemTaxableAmount;
+      }
+      taxableSubtotal += itemTaxableAmount;
+      totalGst += itemGstAmount;
+    });
+
+    // If order already has these values stored, prefer those for consistency
+    return {
+      taxableSubtotal: data?.taxableSubtotal !== undefined ? data.taxableSubtotal : taxableSubtotal,
+      totalGst: data?.totalGst !== undefined ? data.totalGst : totalGst,
+    };
+  }, [data]);
+
   // Status Color Logic
   const getStatusColor = (status) => {
     switch (status) {
@@ -133,9 +165,17 @@ const InvoicePDF = ({ data, globalSetting }) => {
                 src="https://res.cloudinary.com/dezs8ma9n/image/upload/v1766484997/horecaLogo_hirtnv.png"
                 style={{ width: 100, height: 35, marginBottom: 5 }}
               />
-              <Text style={tw("text-xs text-gray-500 text-right w-48")}>
-                {globalSetting?.address || "Cecilia Chapman, 561-4535 Nulla LA, United States 96522"}
+              <Text style={tw("text-xs text-gray-600 font-bold text-right")}>
+                {globalSetting?.company_name || "HCX Global Pvt. Ltd."}
               </Text>
+              <Text style={tw("text-xs text-gray-500 text-right w-48")}>
+                {globalSetting?.address || "C-003, Station Complex, Sanpada, Navi Mumbai - 400705"}
+              </Text>
+              {(globalSetting?.vat_number) && (
+                <Text style={tw("text-xs text-gray-500 text-right mt-1")}>
+                  GSTIN: {globalSetting.vat_number}
+                </Text>
+              )}
             </View>
           </View>
 
@@ -184,8 +224,8 @@ const InvoicePDF = ({ data, globalSetting }) => {
           <View style={[styles.tableHeader, tw("bg-gray-50")]}>
             <Text style={[styles.colSr, tw("text-xs font-bold text-gray-700 uppercase")]}>Sr.</Text>
             <Text style={[styles.colProduct, tw("text-xs font-bold text-gray-700 uppercase pl-2")]}>Product Name</Text>
-            <Text style={[styles.colQty, tw("text-xs font-bold text-gray-700 uppercase")]}>Quantity</Text>
-            <Text style={[styles.colPrice, tw("text-xs font-bold text-gray-700 uppercase")]}>Item Price</Text>
+            <Text style={[styles.colQty, tw("text-xs font-bold text-gray-700 uppercase")]}>Qty</Text>
+            <Text style={[styles.colPrice, tw("text-xs font-bold text-gray-700 uppercase")]}>Price</Text>
             <Text style={[styles.colAmount, tw("text-xs font-bold text-gray-700 uppercase")]}>Amount</Text>
           </View>
 
@@ -193,28 +233,20 @@ const InvoicePDF = ({ data, globalSetting }) => {
             <View key={i} style={styles.tableRow}>
               <Text style={[styles.colSr, tw("text-xs text-gray-500")]}>{i + 1}</Text>
               <View style={[styles.colProduct, tw("flex flex-row items-center")]}>
-                {/* Optional: Add Image here if needed, but keeping it text-only for layout safety */}
-                <Text style={tw("text-xs font-medium text-gray-700 pl-2")}>{item.title}</Text>
+                {item.image && (
+                  <Image
+                    src={item.image}
+                    style={{ width: 25, height: 25, marginRight: 6, borderRadius: 3 }}
+                  />
+                )}
+                <Text style={tw("text-xs font-medium text-gray-700")}>{item.title}</Text>
               </View>
               <Text style={[styles.colQty, tw("text-xs text-gray-500")]}>{item.quantity}</Text>
-              <View style={[styles.colPrice, tw("flex flex-col items-center")]}>
-                {(() => {
-                  const originalPrice = parseFloat(item.originalPrice || item.prices?.originalPrice || item.prices?.price || 0);
-                  if (originalPrice > item.price) {
-                    return (
-                      <Text style={tw("text-[8px] text-gray-400 line-through")}>
-                        {currency}{getNumberTwo(originalPrice)}
-                      </Text>
-                    );
-                  }
-                  return null;
-                })()}
-                <Text style={tw("text-xs font-bold text-gray-500")}>
-                  {currency}{getNumberTwo(item.price)}
-                </Text>
-              </View>
+              <Text style={[styles.colPrice, tw("text-xs text-gray-500")]}>
+                {currency}{getNumberTwo(item.price)}
+              </Text>
               <Text style={[styles.colAmount, tw("text-xs font-bold text-gray-500")]}>
-                {currency}{getNumberTwo(item.itemTotal)}
+                {currency}{getNumberTwo(item.itemTotal || item.price * item.quantity)}
               </Text>
             </View>
           ))}
@@ -222,72 +254,39 @@ const InvoicePDF = ({ data, globalSetting }) => {
 
         {/* Footer Totals Section */}
         <View style={tw("border-t border-b border-gray-100 p-8 bg-emerald-50 mt-4")}>
-          <View style={tw("flex flex-row justify-between mb-4")}>
-            <View style={tw("flex flex-col w-1/4")}>
-              <Text style={tw("font-bold text-xs uppercase text-gray-600 mb-1")}>
-                Payment Method
-              </Text>
-              <Text style={tw("text-xs text-gray-500 font-bold")}>
-                {data?.paymentMethod}
-              </Text>
-            </View>
-            <View style={tw("flex flex-col w-1/4")}>
-              <Text style={tw("font-bold text-xs uppercase text-gray-600 mb-1")}>
-                Shipping Cost
-              </Text>
-              {data?.shippingCost === 0 || !data?.shippingCost ? (
-                <Text style={tw("text-xs text-green-600 font-bold")}>FREE</Text>
-              ) : (
-                <Text style={tw("text-xs text-gray-500 font-bold")}>
-                  {currency}{getNumberTwo(data?.shippingCost)}
-                </Text>
+          <View style={tw("flex flex-row justify-between")}>
+            {/* Left Column - Payment Info */}
+            <View style={tw("w-1/2")}>
+              <View style={tw("flex flex-row justify-between mb-2")}>
+                <Text style={tw("text-xs text-gray-600")}>Payment Method:</Text>
+                <Text style={tw("text-xs font-bold text-gray-700")}>{data?.paymentMethod || "RazorPay"}</Text>
+              </View>
+              <View style={tw("flex flex-row justify-between mb-2")}>
+                <Text style={tw("text-xs text-gray-600")}>Shipping:</Text>
+                <Text style={tw("text-xs font-bold text-green-600")}>FREE</Text>
+              </View>
+              {data?.discount > 0 && (
+                <View style={tw("flex flex-row justify-between mb-2")}>
+                  <Text style={tw("text-xs text-gray-600")}>Discount:</Text>
+                  <Text style={tw("text-xs font-bold text-red-500")}>-{currency}{getNumberTwo(data?.discount)}</Text>
+                </View>
               )}
             </View>
 
-            <View style={tw("flex flex-col w-1/4")}>
-              <Text style={tw("font-bold text-xs uppercase text-gray-600 mb-1")}>
-                Discount
-              </Text>
-              <Text style={tw("text-xs text-gray-500 font-bold")}>
-                {currency}{getNumberTwo(data?.discount)}
-              </Text>
-            </View>
-
-            <View style={tw("flex flex-col w-1/4")}>
-              {/* Spacer */}
-            </View>
-          </View>
-
-          <View style={tw("flex flex-row justify-between pt-4 border-t border-emerald-100")}>
-            <View style={tw("flex flex-col w-1/4")}>
-              <Text style={tw("font-bold text-xs uppercase text-gray-600 mb-1")}>
-                Taxable Subtotal
-              </Text>
-              <Text style={tw("text-xs text-gray-500 font-bold")}>
-                {currency}{getNumberTwo(data?.taxableSubtotal)}
-              </Text>
-            </View>
-
-            <View style={tw("flex flex-col w-1/4")}>
-              <Text style={tw("font-bold text-xs uppercase text-gray-600 mb-1")}>
-                GST
-              </Text>
-              <Text style={tw("text-xs text-gray-500 font-bold")}>
-                {currency}{getNumberTwo(data?.totalGst)}
-              </Text>
-            </View>
-
-            <View style={tw("flex flex-col w-1/4")}>
-              {/* Spacer */}
-            </View>
-
-            <View style={tw("flex flex-col w-1/4")}>
-              <Text style={tw("font-bold text-xs uppercase text-gray-600 mb-1")}>
-                Total Amount
-              </Text>
-              <Text style={tw("text-xl font-bold text-red-500")}>
-                {currency}{getNumberTwo(data?.total)}
-              </Text>
+            {/* Right Column - Totals */}
+            <View style={tw("w-1/2 pl-8")}>
+              <View style={tw("flex flex-row justify-between mb-2")}>
+                <Text style={tw("text-xs text-gray-600")}>Item Total:</Text>
+                <Text style={tw("text-xs font-bold text-gray-700")}>{currency}{getNumberTwo(pricingBreakdown.taxableSubtotal)}</Text>
+              </View>
+              <View style={tw("flex flex-row justify-between mb-2")}>
+                <Text style={tw("text-xs text-gray-600")}>+ GST:</Text>
+                <Text style={tw("text-xs font-bold text-gray-700")}>{currency}{getNumberTwo(pricingBreakdown.totalGst)}</Text>
+              </View>
+              <View style={tw("flex flex-row justify-between pt-2 border-t border-gray-300")}>
+                <Text style={tw("text-sm font-bold text-gray-700")}>Total:</Text>
+                <Text style={tw("text-lg font-bold text-red-500")}>{currency}{getNumberTwo(data?.total)}</Text>
+              </View>
             </View>
           </View>
         </View>

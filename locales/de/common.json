@@ -1,8 +1,6 @@
 {
   "Top-Search": "Suche nach Produkten (z.B. Fisch, Apfel, Öl)",
-
   "/=================*Top Menu*=================/": "",
-
   "HOME": "Heim",
   "About Us": "Über uns",
   "Products": "Produkte",
@@ -18,9 +16,7 @@
   "Call Us": "Wir sind rund um die Uhr für Sie da. Brauchen Sie Hilfe? Rufen Sie uns an:",
   "sliderH1": "POS und E-Commerce-Website werden beide von einem einzigen, benutzerfreundlichen Administrationspanel aus gesteuert",
   "Checkout": "Kasse",
-
   "search-placeholder": "Suche nach Produkten (z. B. Fisch, Apfel, Öl)  ",
-
   "/=================*page*==================/": "",
   "offer-page": "Angebot",
   "checkout-page": "Kasse",
@@ -30,103 +26,72 @@
   "privacy-policy-page": "Datenschutz-Bestimmungen",
   "terms-and-conditions-page": "Terms & amp; Bedingungen",
   "not-found-page": "404",
-
   "/=================*Top Slider*=================/": "",
-
   "Slider1Title": "Die besten Qualitätsprodukte garantiert!",
   "Slider1description": "Erleichtern Sie dramatisch die effektive Gesamtverknüpfung für Vorwärtsprozesse ...",
-
   "Slider2Title": "Beste andere Art von Lebensmittelgeschäft",
   "Slider2description": "Schnelles Zusammenführen leistungsfähiger Netzwerke nach neuen Produkten...",
-
   "Slider3Title": "Qualitätsfrische garantiert!",
   "Slider3description": "Gestalten Sie eher leistungsbasierte Produkte als genaue Vorteile ...",
-
   "Slider-btn": "Jetzt einkaufen",
-
   "/=================*Offer Card*=================/": "",
   "mega-offer": "Mega Angebot",
   "OfferCard-Title": "Neuester Super-Rabatt-Aktiv-Gutscheincode",
-
   "/=================*Banner*=================/": "",
-
   "Banner-title-span-text": "100 % natürliche Qualität",
   "Banner-title-text": "Organisches Produkt",
   "Banner-paragraph-text": "Sehen Sie sich hier unsere neuesten reduzierten Produkte an und erhalten Sie ein Sonderangebot",
   "Banner-link-text": "Rabattprodukt",
   "Banner-btn-text": "Jetzt einkaufen",
-
   "/=================*Featured Categories*=================/": "",
-
   "Featured-title": "Beliebte Kategorien",
   "Featured-sub-title": "Wählen Sie Ihre benötigten Produkte aus diesen Feature-Kategorien aus. ",
-
   "/=================*popular products*=================/": "",
-
   "popular-products-title": "Beliebte Produkte für den täglichen Einkauf",
   "popular-products-sub-title": "Sehen Sie sich diese Woche alle unsere beliebten Produkte an. Sie können Ihre Produkte des täglichen Bedarfs aus dieser Liste auswählen und ein Sonderangebot mit kostenlosem Versand erhalten.",
-
   "/=================*promotional banner*=================/": "",
-
   "promotional-banner-title-span-text": "Bio-Produkte und Lebensmittel",
   "promotional-banner-title-text": "Schnelle Lieferung nach",
   "promotional-banner-title-span": "Ihr Haus",
   "promotional-banner-paragraph-text": "Es gibt viele Produkte, die Sie in unserem Shop finden. Wählen Sie Ihr täglich benötigtes Produkt aus unserem Horeca1-Shop und erhalten Sie ein Sonderangebot. Sehen Sie sich hier unsere neuesten reduzierten Produkte an und erhalten Sie einen Sonderrabatt.",
   "promotional-banner-link-text": "Lade App herunter",
-
   "/=================*Discounted Products*=================/": "",
-
   "discounted-products-title": "Neueste reduzierte Produkte",
   "discounted-products-paragraph-text": "Sehen Sie sich unten unsere neuesten reduzierten Produkte an. Wählen Sie hier Ihren täglichen Bedarf aus und erhalten Sie einen Sonderrabatt mit kostenlosem Versand.",
-
   "/=================*Feature Promo*=================/": "",
-
   "featurePromo1-title": "Kostenloser Versand",
   "featurePromo1-info": "Ab $500,00",
-
   "featurePromo2-title": "Die Unterstützung 24/7",
   "featurePromo2-info": "Jederzeit",
-
   "featurePromo3-title": "Sichere Bezahlung",
   "featurePromo3-info": "Völlig sicher",
-
   "featurePromo4-title": "Neuestes Angebot",
   "featurePromo4-info": "Bis zu 20 % Rabatt",
-
   "/=================*Footer Top*=================/": "",
-
   "footer-top-title": "Holen Sie sich Ihre täglichen Bedürfnisse aus unserem Horeca1 Store",
   "footer-top-paragraph-text": "Es gibt viele Produkte, die Sie in unserem Shop finden. Wählen Sie Ihr täglich benötigtes Produkt aus unserem Horeca1-Shop und erhalten Sie ein Sonderangebot.",
-
   "/=================*Footer *=================/": "",
-
   "footer-menu-title": "Gesellschaft",
   "footer-about-us": "Über uns",
   "footer-contact-us": "Kontaktiere uns",
   "footer-careers": "Karriere",
   "footer-news": "Neuesten Nachrichten",
-
   "footer-top-category": "Top-Kategorie",
   "footer-top-category-fish-meat": "Fisch Fleisch",
   "footer-top-category-soft-drinks": "Alkoholfreie Getränke",
   "footer-top-category-baby-care": "Säuglingspflege",
   "footer-top-category-beauty-health": "Schönheit und Gesundheit",
-
   "footer-my-account-title": "Mein Konto",
   "footer-my-account-dashboard": "Armaturenbrett",
   "footer-my-account-myOrders": "Meine Bestellungen",
   "footer-my-account-recentOrders": "letzte Bestellungen",
   "footer-my-account-updatedProfile": "Aktualisiertes Profil",
-
-  "footer-address": "987 Andre Plain Suite High Street 838, Lake Hestertown, USA",
-  "footer-tell": "Sag: 02.356.1666",
-  "footer-email": "E-Mail: ccruidk@test.com",
-
+  "footer-address": "C-003, Station Complex, Sanpada, Navi Mumbai - 400705",
+  "footer-tell": "Tel: +91 9136659294",
+  "footer-email": "E-Mail: team.horeca1@gmail.com",
   "footer-follow-us": "Folge uns",
   "footer-call-us": "Ruf uns heute an!",
-
   "/=================* About Us* =================/": "",
-
   "about-page-title": "Über uns",
   "about-section-title": "Willkommen in unserem Horeca1",
   "about-section-top-paragraph1": "Erfassen Sie parallele Metriken und funktionalen ROI ganzheitlich. Revolutionieren Sie nahtlos fehlerfreie interne oder organische Quellen vor effektiven Szenarien. Fördern Sie nach und nach hochmoderne Anwendungen für effizientes intellektuelles Kapital. Nutzen Sie glaubwürdig die bestehende unverwechselbare Denkweise durch innovative Schemata. Teambuilding-Paradigmen proaktiv aufschieben koordinieren kundenzentriert total transparent intern.",
@@ -145,23 +110,16 @@
   "chief-strategy-officer": "Chief Strategy Officer",
   "hr-officer": "Personalreferent",
   "lead-developer": "Leitender Entwickler",
-
   "/=================* Contact Us* =================/": "",
-
   "contact-page-title": "Kontaktiere uns",
-
   "contact-page-box1-title": "Email Uns",
   "contact-page-box1-info": "Wachsen Sie interaktiv für eine prozesszentrierte Gesamtverknüpfung.",
-
   "contact-page-box2-title": "Rufen Sie uns an",
   "contact-page-box2-info": "Verbreiten Sie zielgerichtete Lösungen mit Click-and-Mortar-Ministaat.",
-
   "contact-page-box3-title": "Ort",
-  "contact-page-box3-info": "Cecilia Chapman, 561-4535 Nulla LA, USA 96522",
-
+  "contact-page-box3-info": "HCX Global Pvt. Ltd., C-003, Station Complex, Sanpada, Navi Mumbai - 400705",
   "contact-page-form-title": "Für Unterstützung senden Sie einfach Ihre Anfrage",
   "contact-page-form-paragraph": "Fördern Sie gemeinsam die kundenorientierte Konvergenz gegenüber kundenorientierten Ausrichtungen durch Plagiate strategischer Benutzer und standardisierter Infrastrukturen.",
-
   "contact-page-form-input-name": "Ihren Namen",
   "contact-page-form-plaholder-name": "Gib deinen Namen ein",
   "contact-page-form-input-email": "Deine E-Mail",
@@ -171,9 +129,7 @@
   "contact-page-form-input-message": "Nachricht",
   "contact-page-form-plaholder-message": "Schreibe deine Nachricht hier",
   "contact-page-form-send-btn": "Nachricht senden",
-
   "/=================* Single Product More Info* =================/": "",
-
   "moreInfo": "Mehr Info",
   "showLess": "Zeige weniger",
   "stockOut": "Ausverkauft",
@@ -184,17 +140,13 @@
   "shareYourSocialText": "Teilen Sie dieses Produkt, um viel Verkehr aus sozialen Netzwerken zu erhalten",
   "relatedProducts": "Verwandte Produkte",
   "stock": "Stock",
-
   "/=================* Cart Drawer * =================/": "",
-
   "shoppingCartDrawerTitle": "Einkaufswagen",
   "closeBtn": "Nah dran",
   "cartEmptyTitle": "Ihr Warenkorb ist leer",
   "cartEmptyText": "Keine Artikel in Ihrem Warenkorb hinzugefügt. Bitte fügen Sie das Produkt Ihrer Warenkorbliste hinzu.",
   "proceedToCheckoutBtn": "Zur Kasse",
-
   "/=================* Login Popup * =================/": "",
-
   "loginTitle": "Anmeldung",
   "loginBoxText": "Melden Sie sich mit Ihrer E-Mail und Ihrem Passwort an",
   "email": "Email",
@@ -205,23 +157,17 @@
   "notAccount": "Kein Konto haben",
   "alreadyHaveAccount": "Sie haben bereits ein Konto?",
   "register": "Registrieren",
-
   "/=================* Signing Up * =================/": "",
-
   "signingUp": "Anmeldung",
   "createAccount": "Ein Konto erstellen",
   "name": "Name",
-
   "items": "Artikel",
-
   "/=================* checkout * =================/": "",
-
   "personalDetails": "Persönliche Daten",
   "firstName": "Vorname",
   "lastName": "Nachname",
   "emailAddress": "E-Mail-Addresse",
   "phoneNumber": "Telefonnummer",
-
   "shippingDetails": "Versanddetails",
   "streetAddress": "Adresse",
   "city": "Stadt",
@@ -232,23 +178,17 @@
   "cashOnDelivery": "Barzahlung bei Lieferung",
   "creditCard": "Kreditkarte",
   "payPal": "PayPal",
-
   "continueShoppingBtn": "Mit dem Einkaufen fortfahren",
   "confirmOrderBtn": "Bestellung bestätigen",
   "processing": "wird bearbeitet",
-
   "orderSummary": "Bestellübersicht",
   "applyBtn": "Sichbewerben",
   "couponCode": "Geben Sie Ihren Gutscheincode ein",
   "subtotal": "Zwischensumme",
-
   "discount": "Rabatt",
   "totalCost": "GESAMTKOSTEN",
-
   "shippingMethod": "Versandart",
-
   "/=================* Invoice * =================/": "",
-
   "invoice": "Rechnung",
   "date": "Datum",
   "invoiceNo": "Rechnungs-Nr.",
@@ -259,22 +199,18 @@
   "itemPrice": "Stückpreis",
   "amount": "Menge",
   "paymentMethod": "Zahlungsmethode",
-
   "totalAmount": "Gesamtsumme",
   "downloadInvoice": "Download Rechnung",
   "printInvoice": "Rechnung drucken",
   "thankyou": "Vielen Dank",
   "orderReceivedMsg": "Ihre Bestellung ist eingegangen!",
-
   "/=================* My account * =================/": "",
-
   "dashboard": "Armaturenbrett",
   "myOrders": "Meine Bestellungen",
   "updateProfile": "Profil aktualisieren",
   "changePassword": "Passwort ändern",
   "logout": "Ausloggen",
   "noOrder": "Sie haben noch keine Bestellung!",
-
   "action": "AKTION",
   "id": "ICH WÜRDE",
   "oderTime": "BESTELLZEITPUNKT",
@@ -282,18 +218,14 @@
   "status": "STATUS",
   "total": "GESAMT",
   "details": "Einzelheiten",
-
   "next": "Nächste",
   "previous": "Vorherige",
-
   "dashboardText": "Dies ist das Benutzer-Dashboard",
   "totalOrder": "Gesamtbestellung",
   "pendingOrder": "Ausstehende Bestellung",
   "processingOrder": "Bearbeitungsauftrag",
   "completeOrder": "Bestellung abschließen",
-
   "recentOrder": "Letzte Bestellung",
-
   "photo": "Foto",
   "fullName": "Vollständiger Name",
   "yourAddress": "Deine Adresse",
@@ -301,15 +233,12 @@
   "yourMobile": "Deine Telefonnummer",
   "updateProfileBtn": "Profil aktualisieren",
   "dragYourImageHere": "Ziehen Sie Ihr Bild hierher",
-
   "currentPassword": "Jetziges Passwort",
   "yourCurrentPassword": "Dein aktuelles Passwort",
   "newPassword": "Neues Passwort",
   "yourNewPassword": "Dein neues Passwort",
   "changePasswordBtn": "Passwort ändern",
-
   "/=================* Search * =================/": "",
-
   "loadMoreBtn": "Mehr laden",
   "totalI": "Gesamt",
   "itemsFound": "Gegenstände gefunden",
@@ -317,7 +246,6 @@
   "lowToHigh": "Niedrig bis hoch",
   "highToLow": "Absteigend",
   "sorryText": "Entschuldigung, wir können dieses Produkt nicht finden",
-
   "/=================* faq* =================/": "",
   "faq-title": "Häufig gestellte Fragen ",
   "Faq-question1": "Wie funktioniert der Horeca1?  ",
@@ -336,7 +264,6 @@
   "Faq-question7-ans": "Ja. Sie können Ihr Abonnement jederzeit kündigen. Ihr Abonnement bleibt bis zum Ende Ihrer aktuellen Laufzeit (Monat oder Jahr) aktiv, verlängert sich jedoch nicht automatisch. Sofern Sie Ihr Konto nicht manuell löschen, werden Ihr Konto und alle Daten 60 Tage nach Inaktivität Ihres Abonnements gelöscht.  ",
   "Faq-question8": "Was ist Flottenmanagement und wie unterscheidet es sich von dynamischer Skalierung?  ",
   "Faq-question8-ans": "Initiieren Sie eindeutig fehlerfreie Kanäle mit hocheffizientem ROI. Stellen Sie sich intrinsisch Weltklasse-Daten durch Best-of-Breed-Best-Practices vor. Befähigen Sie E-Tailer effizient nach bereichsübergreifenden Services. Beschleunigen Sie nahtlose E-Tailer auf einzigartige Weise über kooperative Schnittstellen. Monotonektal myokardinierte kundenorientierte Metadienste, während fehlerfreie Szenarien.  ",
-
   "/=================* privacy-policy * =================/": "",
   "privacy-policy-update-date": "Zuletzt aktualisiert: 15. Februar 2022  ",
   "privacy-policy-update-date-docs1": "Bei Horeca1, zugänglich über Horeca1 dot com, ist die Privatsphäre unserer Besucher eine unserer Hauptprioritäten. Diese Datenschutzrichtlinie enthält Arten von Informationen, die von Horeca1 gesammelt und aufgezeichnet werden, und wie wir sie verwenden. Wenn Sie weitere Fragen haben oder weitere Informationen zu unserer Datenschutzrichtlinie benötigen, zögern Sie nicht, uns zu kontaktieren. Möglicherweise erhalten wir zusätzliche Informationen über Sie, wie Ihren Namen, Ihre E-Mail-Adresse, Telefonnummer, den Inhalt der Nachricht und/oder eventuelle Anhänge uns zusenden, und alle anderen Informationen, die Sie uns zur Verfügung stellen möchten. Wenn Sie sich für ein Konto registrieren, fragen wir Sie möglicherweise nach Ihren Kontaktinformationen, einschließlich Angaben wie Name, Firmenname, Adresse, E-Mail-Adresse und Telefonnummer.  ",
@@ -367,7 +294,6 @@
   "privacy-policy-children-information": "Informationen für Kinder  ",
   "privacy-policy-children-information-docs1": "Ein weiterer Teil unserer Priorität ist der Schutz von Kindern bei der Nutzung des Internets. Wir ermutigen Eltern und Erziehungsberechtigte, ihre Online-Aktivitäten zu beobachten, daran teilzunehmen und/oder sie zu überwachen und zu leiten. Fordern Sie ein Unternehmen auf, alle personenbezogenen Daten über den Verbraucher zu löschen, die ein Unternehmen gesammelt hat. Wenn Sie eine Anfrage stellen, haben wir einen Monat Zeit, um Ihnen zu antworten. Wenn Sie eines dieser Rechte ausüben möchten, kontaktieren Sie uns bitte.  ",
   "privacy-policy-children-information-docs2": "Horeca1 sammelt wissentlich keine personenbezogenen Daten von Kindern unter 13 Jahren. Wenn Sie der Meinung sind, dass Ihr Kind diese Art von Informationen auf unserer Website bereitgestellt hat, empfehlen wir Ihnen dringend, sich umgehend mit uns in Verbindung zu setzen, und wir werden unser Bestes tun, um sie umgehend zu entfernen solche Informationen aus unseren Aufzeichnungen. ",
-
   "/=================* terms and condition* =================/": "",
   "terms-condition-welcome": "Willkommen bei Horeca1!  ",
   "terms-condition-welcome-docs1": "Diese Allgemeinen Geschäftsbedingungen beschreiben die Regeln und Vorschriften für die Nutzung der Website von Horeca1, die unter https://Horeca1.com/ zu finden ist. Durch den Zugriff auf diese Website gehen wir davon aus, dass Sie diese Bedingungen akzeptieren. Verwenden Sie Horeca1 nicht weiter, wenn Sie nicht damit einverstanden sind, alle auf dieser Seite aufgeführten Bedingungen zu akzeptieren.  ",
