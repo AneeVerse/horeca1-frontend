@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   FolderIcon,
@@ -13,6 +14,7 @@ import {
 import { getAllCategories } from "@services/AdminCategoryService";
 import { getAllProducts } from "@services/AdminProductService";
 import { getAllCustomers } from "@services/CustomerServices";
+import { isTokenExpired } from "@services/AdminAuthService";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -22,11 +24,22 @@ export default function AdminDashboard() {
     customers: 0,
     loading: true,
   });
+  const router = useRouter();
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
         const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
+
+        // Check if token is expired
+        if (!token || isTokenExpired(token)) {
+          console.warn("[Admin Dashboard] Token expired, redirecting to login...");
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminInfo");
+          router.push("/admin/login");
+          return;
+        }
+
         const { baseURL } = await import("@services/CommonService");
 
         const [categoriesRes, productsRes, ordersRes, customersRes] = await Promise.all([
@@ -37,7 +50,18 @@ export default function AdminDashboard() {
               "Content-Type": "application/json",
               ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
-          }).then(res => res.ok ? res.json() : { totalOrder: 0 }).catch(() => ({ totalOrder: 0 })),
+          }).then(async (res) => {
+            if (res.status === 401) {
+              console.warn("[Admin Dashboard] Order count request failed (401), token may be expired");
+              throw new Error("Unauthorized");
+            }
+            return res.ok ? res.json() : { totalOrder: 0 };
+          }).catch((err) => {
+            if (err.message === "Unauthorized") {
+              throw err; // Re-throw to be caught by outer catch
+            }
+            return { totalOrder: 0 };
+          }),
           getAllCustomers(),
         ]);
 
@@ -57,12 +81,21 @@ export default function AdminDashboard() {
         });
       } catch (error) {
         console.error("Error fetching stats:", error);
+
+        // Handle Unauthorized errors - redirect to login
+        if (error.message === "Unauthorized") {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminInfo");
+          router.push("/admin/login");
+          return;
+        }
+
         setStats((prev) => ({ ...prev, loading: false }));
       }
     };
 
     fetchStats();
-  }, []);
+  }, [router]);
 
   const statCards = [
     {

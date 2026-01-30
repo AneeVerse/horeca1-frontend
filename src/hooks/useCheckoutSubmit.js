@@ -17,6 +17,7 @@ import { addNotification } from "@services/NotificationServices";
 import {
   addOrder,
   addRazorpayOrder,
+  savePendingPayment,
   createOrderByRazorPay,
   createPaymentIntent,
   sendEmailInvoiceToCustomer,
@@ -545,21 +546,65 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
         description: `Order total: ₹${amountInPaise / 100}`,
         order_id: id,
         handler: async (response) => {
-          console.log("[Frontend Razorpay] Payment successful:", response);
-          const razorpayDetails = {
-            amount: orderInfo.total,
-            razorpayPaymentId: response.razorpay_payment_id,
-            razorpayOrderId: response.razorpay_order_id,
-            razorpaySignature: response.razorpay_signature,
-          };
+          try {
+            console.log("[Frontend Razorpay] Payment successful, creating order...");
+            console.log("[Frontend Razorpay] Payment ID:", response.razorpay_payment_id);
+            console.log("[Frontend Razorpay] Order ID:", response.razorpay_order_id);
 
-          const orderData = { ...orderInfo, razorpay: razorpayDetails, cart: items };
-          const { orderResponse, error } = await addRazorpayOrder(orderData);
-          if (error || !orderResponse) {
+            const razorpayDetails = {
+              amount: orderInfo.total,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+            };
+
+            // Save pending payment as safety net BEFORE creating order
+            // This ensures we can recover if order creation fails
+            console.log("[Frontend Razorpay] Saving pending payment as safety net...");
+            await savePendingPayment({
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+              amount: orderInfo.total,
+              orderInfo: orderInfo,
+            });
+
+            const orderData = { ...orderInfo, razorpay: razorpayDetails, cart: items };
+            console.log("[Frontend Razorpay] Calling addRazorpayOrder with data:", {
+              user_info: orderData.user_info,
+              total: orderData.total,
+              paymentMethod: orderData.paymentMethod,
+              cartItemsCount: orderData.cart?.length,
+              razorpayPaymentId: razorpayDetails.razorpayPaymentId,
+            });
+
+            const { orderResponse, error } = await addRazorpayOrder(orderData);
+
+            console.log("[Frontend Razorpay] addRazorpayOrder result:", {
+              success: !!orderResponse,
+              error: error,
+              orderId: orderResponse?._id,
+              invoice: orderResponse?.invoice,
+            });
+
+            if (error || !orderResponse) {
+              console.error("[Frontend Razorpay] CRITICAL: Payment captured but order creation failed!");
+              console.error("[Frontend Razorpay] Error:", error);
+              console.error("[Frontend Razorpay] Payment ID:", response.razorpay_payment_id);
+              console.error("[Frontend Razorpay] Please create order manually for this payment.");
+              setIsCheckoutSubmit(false);
+              return notifyError(error || "Order creation failed. Please contact support with Payment ID: " + response.razorpay_payment_id);
+            }
+
+            console.log("[Frontend Razorpay] Order created successfully, invoice:", orderResponse.invoice);
+            await handleOrderSuccess(orderResponse, orderInfo);
+          } catch (handlerError) {
+            console.error("[Frontend Razorpay] CRITICAL: Handler error after payment captured!");
+            console.error("[Frontend Razorpay] Error:", handlerError.message);
+            console.error("[Frontend Razorpay] Payment ID:", response.razorpay_payment_id);
             setIsCheckoutSubmit(false);
-            return notifyError(error || "Order creation failed");
+            notifyError("Order processing failed. Please contact support with Payment ID: " + response.razorpay_payment_id);
           }
-          await handleOrderSuccess(orderResponse, orderInfo);
         },
         prefill: {
           name: orderInfo?.user_info?.name || "Customer",

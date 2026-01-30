@@ -54,6 +54,26 @@ const createPaymentIntent = async (orderInfo) => {
   }
 };
 
+// Save pending payment as a safety net before order creation
+// This allows recovery if order creation fails after payment is captured
+const savePendingPayment = async (paymentInfo) => {
+  try {
+    const response = await fetch(`${baseURL}/order/pending-payment`, {
+      cache: "no-cache",
+      method: "POST",
+      headers: await getHeaders(),
+      body: JSON.stringify(paymentInfo),
+    });
+
+    const result = await handleResponse(response);
+    return { success: true, pendingPaymentId: result._id };
+  } catch (error) {
+    console.error("[OrderServices] Failed to save pending payment:", error.message);
+    // Don't fail the order creation - this is just a safety net
+    return { success: false, error: error.message };
+  }
+};
+
 // Add Razorpay order; expects flat order payload (not nested)
 const addRazorpayOrder = async (orderInfo) => {
   try {
@@ -84,16 +104,16 @@ const createOrderByRazorPay = async ({ amount }) => {
   try {
     const amountNum = Number(amount);
     console.log("[OrderServices] Creating Razorpay order with amount (rupees):", amountNum);
-    
+
     const response = await fetch(`${baseURL}/order/create/razorpay`, {
       cache: "no-cache",
       method: "POST",
       headers: await getHeaders(),
       body: JSON.stringify({ amount: amountNum }),
     });
-    
+
     const order = await handleResponse(response);
-    
+
     console.log("[OrderServices] Razorpay order response received:");
     console.log("[OrderServices] Order ID:", order.id);
     console.log("[OrderServices] Order Amount (paise):", order.amount);
@@ -191,6 +211,7 @@ export {
   addOrder,
   createPaymentIntent,
   addRazorpayOrder,
+  savePendingPayment,
   createOrderByRazorPay,
   getOrderCustomer,
   getOrderById,

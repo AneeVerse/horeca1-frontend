@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import {
   EyeIcon,
@@ -12,6 +13,7 @@ import {
   PrinterIcon,
 } from "@heroicons/react/24/outline";
 import { baseURL } from "@services/CommonService";
+import { isTokenExpired } from "@services/AdminAuthService";
 import { toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
 import { useReactToPrint } from "react-to-print";
@@ -41,12 +43,23 @@ export default function OrdersPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [updating, setUpdating] = useState(false);
   const [tokenReady, setTokenReady] = useState(false);
+  const router = useRouter();
 
-  // Check for token availability on mount and set up visibility listener
+  // Check for token availability and validity on mount
   useEffect(() => {
     const checkToken = () => {
       const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
+
+      // Check if token exists and is valid JWT format
       if (token && token.startsWith('eyJ')) {
+        // Check if token is expired
+        if (isTokenExpired(token)) {
+          console.warn("[Admin Orders] Token is expired, redirecting to login...");
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminInfo");
+          router.push("/admin/login");
+          return false;
+        }
         setTokenReady(true);
         return true;
       }
@@ -63,15 +76,15 @@ export default function OrdersPage() {
         if (checkToken() || retryCount >= maxRetries) {
           clearInterval(retryInterval);
           if (retryCount >= maxRetries) {
-            console.warn("[Admin Orders] Token not found after retries");
-            setLoading(false);
+            console.warn("[Admin Orders] Token not found after retries, redirecting to login...");
+            router.push("/admin/login");
           }
         }
       }, 200);
 
       return () => clearInterval(retryInterval);
     }
-  }, []);
+  }, [router]);
 
   // Track if we should refetch on visibility change
   const [shouldRefetch, setShouldRefetch] = useState(false);
@@ -151,6 +164,16 @@ export default function OrdersPage() {
           errorData = { message: errorText || res.statusText };
         }
         console.error("[Admin Orders] API Error:", res.status, errorData);
+
+        // Handle 401 Unauthorized - token expired or invalid
+        if (res.status === 401) {
+          console.warn("[Admin Orders] Authentication failed (401), redirecting to login...");
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminInfo");
+          router.push("/admin/login");
+          return;
+        }
+
         throw new Error(errorData.message || `Failed to fetch orders: ${res.status}`);
       }
 
