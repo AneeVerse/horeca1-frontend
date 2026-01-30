@@ -14,6 +14,7 @@ import {
   MapPinIcon,
   PhotoIcon,
   ArrowRightOnRectangleIcon,
+  BanknotesIcon,
 } from "@heroicons/react/24/outline";
 import { isAdminAuthenticated, logoutAdmin } from "@services/AdminAuthService";
 
@@ -22,6 +23,7 @@ const navigation = [
   { name: "Categories", href: "/admin/categories", icon: FolderIcon },
   { name: "Products", href: "/admin/products", icon: CubeIcon },
   { name: "Orders", href: "/admin/orders", icon: ShoppingCartIcon },
+  { name: "Pending Payments", href: "/admin/pending-payments", icon: BanknotesIcon },
   { name: "Customers", href: "/admin/customers", icon: UsersIcon },
   { name: "PIN Codes", href: "/admin/pincodes", icon: MapPinIcon },
   { name: "Banners", href: "/admin/banners", icon: PhotoIcon },
@@ -91,8 +93,8 @@ export default function AdminLayout({ children }) {
                   key={item.name}
                   href={item.href}
                   className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium ${isActive
-                      ? "bg-blue-50 text-blue-700"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                   onClick={() => setSidebarOpen(false)}
                 >
@@ -128,8 +130,8 @@ export default function AdminLayout({ children }) {
                   key={item.name}
                   href={item.href}
                   className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium ${isActive
-                      ? "bg-blue-50 text-blue-700"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                    ? "bg-blue-50 text-blue-700"
+                    : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     }`}
                 >
                   <item.icon className="h-5 w-5" />
