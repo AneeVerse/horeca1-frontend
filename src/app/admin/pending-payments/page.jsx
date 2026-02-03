@@ -203,7 +203,7 @@ export default function PendingPaymentsPage() {
                         <ul className="mt-2 text-sm text-blue-700 space-y-1">
                             <li>• <strong>Pending:</strong> Payment was captured but order creation is in progress</li>
                             <li>• <strong>Failed:</strong> Payment captured but order failed to create - needs recovery</li>
-                            <li>• <strong>Recovered:</strong> Order was successfully created from this payment</li>
+                            <li>• <strong>Successful:</strong> Order was successfully created from this payment</li>
                             <li>• <strong>Manual:</strong> Marked as manually handled</li>
                         </ul>
                     </div>
@@ -227,7 +227,7 @@ export default function PendingPaymentsPage() {
                         <option value="">All Statuses</option>
                         <option value="pending">Pending</option>
                         <option value="failed">Failed</option>
-                        <option value="recovered">Recovered</option>
+                        <option value="recovered">Successful</option>
                         <option value="manual">Manual</option>
                     </select>
                 </div>
@@ -319,7 +319,7 @@ export default function PendingPaymentsPage() {
                                                     }`}
                                             >
                                                 <StatusIcon className="h-3.5 w-3.5" />
-                                                {payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
+                                                {payment.status === 'recovered' ? 'Successful' : payment.status.charAt(0).toUpperCase() + payment.status.slice(1)}
                                             </span>
                                             {payment.recoveredOrderId && (
                                                 <p className="text-xs text-green-600 mt-1">
@@ -421,7 +421,7 @@ export default function PendingPaymentsPage() {
                                     <div className="flex justify-between">
                                         <span className="text-gray-600">Status:</span>
                                         <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusColors[selectedPayment.status]}`}>
-                                            {selectedPayment.status}
+                                            {selectedPayment.status === 'recovered' ? 'Successful' : selectedPayment.status}
                                         </span>
                                     </div>
                                 </div>
