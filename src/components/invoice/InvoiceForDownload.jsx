@@ -166,16 +166,17 @@ const InvoicePDF = ({ data, globalSetting }) => {
                 style={{ width: 100, height: 35, marginBottom: 5 }}
               />
               <Text style={tw("text-xs text-gray-600 font-bold text-right")}>
-                {globalSetting?.company_name || "HCX Global Pvt. Ltd."}
+                HCX Global Pvt. Ltd.
               </Text>
-              <Text style={tw("text-xs text-gray-500 text-right w-48")}>
-                {globalSetting?.address || "C-003, Station Complex, Sanpada, Navi Mumbai - 400705"}
+              <Text style={tw("text-xs text-gray-500 text-right")}>
+                Navi Mumbai Maharashtra 400705
               </Text>
-              {(globalSetting?.vat_number) && (
-                <Text style={tw("text-xs text-gray-500 text-right mt-1")}>
-                  GSTIN: {globalSetting.vat_number}
-                </Text>
-              )}
+              <Text style={tw("text-xs text-gray-500 text-right mt-1")}>
+                GSTIN: 27AAECH8215M1Z9
+              </Text>
+              <Text style={tw("text-xs text-gray-500 text-right")}>
+                FSSAI: 11526017000005
+              </Text>
             </View>
           </View>
 

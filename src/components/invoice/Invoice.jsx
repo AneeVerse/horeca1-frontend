@@ -79,13 +79,16 @@ const Invoice = ({ data, printRef, globalSetting }) => {
               alt="horeca1"
             />
             <p className="text-sm text-gray-700 font-semibold mt-2">
-              {globalSetting?.company_name || "HCX Global Pvt. Ltd."}
-            </p>
-            <p className="text-xs text-gray-500 max-w-[200px] print:max-w-[150px]">
-              {globalSetting?.address || "C-003, Station Complex, Sanpada, Navi Mumbai - 400705"}
+              HCX Global Pvt. Ltd.
             </p>
             <p className="text-xs text-gray-500">
-              GST: {globalSetting?.vat_number || "27AAJCH7899F1ZC"}
+              Navi Mumbai Maharashtra 400705
+            </p>
+            <p className="text-xs text-gray-500">
+              GSTIN: 27AAECH8215M1Z9
+            </p>
+            <p className="text-xs text-gray-500">
+              FSSAI: 11526017000005
             </p>
           </div>
         </div>
