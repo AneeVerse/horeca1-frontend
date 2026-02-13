@@ -23,6 +23,9 @@ export const metadata = {
     shortcut: "/logo/favicon.webp",
     apple: "/logo/favicon.webp",
   },
+  verification: {
+    google: "tWfkp4bYQ-gZK6R1jQiFC31kWXzJyOK_MvkrhF_J_iI",
+  },
 };
 
 export default async function RootLayout({ children }) {
