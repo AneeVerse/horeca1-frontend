@@ -100,7 +100,7 @@ const addRazorpayOrder = async (orderInfo) => {
   }
 };
 
-const createOrderByRazorPay = async ({ amount }) => {
+const createOrderByRazorPay = async ({ amount, orderInfo }) => {
   try {
     const amountNum = Number(amount);
     console.log("[OrderServices] Creating Razorpay order with amount (rupees):", amountNum);
@@ -109,7 +109,9 @@ const createOrderByRazorPay = async ({ amount }) => {
       cache: "no-cache",
       method: "POST",
       headers: await getHeaders(),
-      body: JSON.stringify({ amount: amountNum }),
+      // Pass orderInfo so the backend can save a pre-payment safety net
+      // record (PendingPayment) before the user ever sees the modal.
+      body: JSON.stringify({ amount: amountNum, orderInfo: orderInfo || null }),
     });
 
     const order = await handleResponse(response);

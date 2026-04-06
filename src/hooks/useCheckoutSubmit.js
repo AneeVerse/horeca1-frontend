@@ -69,6 +69,29 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
     formState: { errors },
   } = useForm();
 
+  // Orphan detection: if the user returns to checkout and localStorage has a
+  // pending_razorpay_order older than 2 minutes, the previous checkout crashed
+  // mid-payment. Show a warning. The webhook + PendingPayment safety net will
+  // recover the order automatically, but the user should know their money is safe.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = localStorage.getItem("pending_razorpay_order");
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      const ageMinutes = (Date.now() - (parsed.savedAt || 0)) / 60000;
+      if (ageMinutes > 2) {
+        notifyError(
+          "A previous payment may not have completed. If money was deducted, your order will be recovered automatically — check 'My Orders' in a few minutes or contact support."
+        );
+        localStorage.removeItem("pending_razorpay_order");
+      }
+    } catch (e) {
+      // Corrupted backup — just clear it
+      try { localStorage.removeItem("pending_razorpay_order"); } catch {}
+    }
+  }, []);
+
   useEffect(() => {
     if (Cookies.get("couponInfo")) {
       const coupon = JSON.parse(Cookies.get("couponInfo"));
@@ -415,6 +438,8 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
       // Manual fallback to ensure react-use-cart is cleared from localStorage
       if (typeof window !== "undefined") {
         localStorage.removeItem("react-use-cart");
+        // Clear the razorpay orphan backup — order is now safely in DB
+        localStorage.removeItem("pending_razorpay_order");
       }
 
       Cookies.remove("couponInfo");
@@ -529,21 +554,39 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
       const amountInRupees = orderTotal > 0 ? orderTotal : fallbackTotal;
 
       console.log("[Frontend Razorpay] ========== Payment Start ==========");
-      console.log("[Frontend Razorpay] Order Info Total:", orderInfo.total);
-      console.log("[Frontend Razorpay] Parsed Order Total:", orderTotal);
-      console.log("[Frontend Razorpay] Cart Total:", cartTotal);
-      console.log("[Frontend Razorpay] Shipping Cost:", shippingCost);
-      console.log("[Frontend Razorpay] Discount Amount:", discountAmount);
-      console.log("[Frontend Razorpay] Fallback Total:", fallbackTotal);
       console.log("[Frontend Razorpay] Final Amount (rupees):", amountInRupees);
 
       if (amountInRupees < 1) {
         throw new Error("Invalid order amount. Please try again.");
       }
 
+      // LAYER 1 SAFETY NET: save complete orderInfo to localStorage BEFORE we
+      // even talk to Razorpay. If the user's browser dies, power fails, or
+      // anything else kills the tab during UPI approval, the next page load
+      // can detect this and ask the user to recover. See recoverOrphanedRazorpayOrder.
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem(
+            "pending_razorpay_order",
+            JSON.stringify({
+              orderInfo,
+              amountInRupees,
+              userId: userInfo?.id || userInfo?._id,
+              userToken: userInfo?.token,
+              savedAt: Date.now(),
+            })
+          );
+        } catch (e) {
+          console.warn("[Frontend Razorpay] localStorage backup failed:", e.message);
+        }
+      }
+
       console.log("[Frontend Razorpay] Calling createOrderByRazorPay with amount:", amountInRupees.toString());
+      // Pass orderInfo so the backend saves LAYER 2 safety net (PendingPayment
+      // record with status=created) BEFORE the modal opens.
       const razorpayOrderResponse = await createOrderByRazorPay({
         amount: amountInRupees.toString(),
+        orderInfo,
       });
 
       if (razorpayOrderResponse.error) {
