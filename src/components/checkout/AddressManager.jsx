@@ -223,12 +223,11 @@ const AddressManager = ({
             });
             setAddresses(updatedAddresses);
 
-            // If edited address was selected, update selection
-            if (selectedAddress?.id === editingAddress.id) {
-                const updatedAddr = { ...editingAddress, ...addressForm };
-                setSelectedAddress(updatedAddr);
-                fillFormWithAddress(updatedAddr);
-            }
+            // Always switch selection to the edited address so the checkout form
+            // reflects the latest details the user just entered.
+            const updatedAddr = { ...editingAddress, ...addressForm };
+            setSelectedAddress(updatedAddr);
+            fillFormWithAddress(updatedAddr);
 
             notifySuccess("Address updated successfully");
         } else {
@@ -248,11 +247,12 @@ const AddressManager = ({
             updatedAddresses.push(newAddress);
             setAddresses(updatedAddresses);
 
-            // Auto-select if it's the first or default address
-            if (updatedAddresses.length === 1 || addressForm.isDefault) {
-                setSelectedAddress(newAddress);
-                fillFormWithAddress(newAddress);
-            }
+            // Always auto-select the newly added address so the checkout form
+            // hidden fields (address/city/zipCode/country) are populated. Without
+            // this, a user could add a non-default address and submit an order
+            // with empty delivery details.
+            setSelectedAddress(newAddress);
+            fillFormWithAddress(newAddress);
 
             notifySuccess("Address added successfully");
         }
@@ -408,12 +408,24 @@ const AddressManager = ({
             )}
 
             {/* Hidden form fields for the address details (not in main form) */}
-            <input type="hidden" {...register("address")} />
-            <input type="hidden" {...register("city")} />
-            <input type="hidden" {...register("country")} />
-            <input type="hidden" {...register("zipCode")} />
+            <input type="hidden" {...register("address", { required: "Delivery address is required" })} />
+            <input type="hidden" {...register("city", { required: "City is required" })} />
+            <input type="hidden" {...register("country", { required: "State is required" })} />
+            <input type="hidden" {...register("zipCode", {
+                required: "PIN code is required",
+                minLength: { value: 6, message: "PIN code must be 6 digits" },
+                maxLength: { value: 6, message: "PIN code must be 6 digits" },
+                pattern: { value: /^\d{6}$/, message: "PIN code must be 6 digits" },
+            })} />
             <input type="hidden" {...register("addressId")} />
             <input type="hidden" {...register("isDefault")} />
+
+            {/* Surface the hidden-field errors so user sees why submit is blocked */}
+            {(errors?.address || errors?.city || errors?.country || errors?.zipCode) && (
+                <p className="text-red-500 text-xs mt-1">
+                    {errors?.address?.message || errors?.zipCode?.message || errors?.city?.message || errors?.country?.message}
+                </p>
+            )}
 
             {/* Address Modal */}
             <Transition show={isModalOpen} as={Fragment}>

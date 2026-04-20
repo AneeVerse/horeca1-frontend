@@ -172,19 +172,53 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
         zipCode: data.zipCode,
       };
 
-      // Pincode Validation
-      const pincode = data.zipCode;
-      const storedPincodes = typeof window !== 'undefined' ? localStorage.getItem("deliveryPincodes") : null;
-      if (storedPincodes) {
-        const allowedPincodes = JSON.parse(storedPincodes);
-        const isServiceable = allowedPincodes.some(p => p.pincode === pincode);
+      // Hard guard: refuse submit if any delivery field is missing. The hidden
+      // address inputs are now required via react-hook-form, but a user can
+      // still reach this point if state gets out of sync (e.g. added an address
+      // that never became the selected one).
+      const cleanZip = (data.zipCode || "").toString().trim();
+      if (
+        !userDetails.name ||
+        !(data.address || "").trim() ||
+        !(data.city || "").trim() ||
+        !/^\d{6}$/.test(cleanZip)
+      ) {
+        const msg = "Please add a complete delivery address (name, address, city, 6-digit PIN) before checkout.";
+        setError(msg);
+        notifyError(msg);
+        setIsCheckoutSubmit(false);
+        return;
+      }
 
+      // Pincode serviceability check. If the allowlist isn't present in
+      // localStorage we previously skipped this entirely, letting unserviceable
+      // orders slip through. Treat missing allowlist as "unknown" and block,
+      // rather than assume-serviceable.
+      const pincode = cleanZip;
+      const storedPincodes = typeof window !== 'undefined' ? localStorage.getItem("deliveryPincodes") : null;
+      if (!storedPincodes) {
+        const msg = "We couldn't verify delivery to your PIN code right now. Please refresh the page and try again.";
+        setError(msg);
+        notifyError(msg);
+        setIsCheckoutSubmit(false);
+        return;
+      }
+      try {
+        const allowedPincodes = JSON.parse(storedPincodes);
+        const isServiceable = Array.isArray(allowedPincodes) && allowedPincodes.some(p => p.pincode === pincode);
         if (!isServiceable) {
-          setError("Sorry currently we do not have service in your pincode. Hope to serve you soon");
-          notifyError("Sorry currently we do not have service in your pincode. Hope to serve you soon");
+          const msg = "Sorry currently we do not have service in your pincode. Hope to serve you soon";
+          setError(msg);
+          notifyError(msg);
           setIsCheckoutSubmit(false);
           return;
         }
+      } catch (e) {
+        const msg = "We couldn't verify delivery to your PIN code right now. Please refresh the page and try again.";
+        setError(msg);
+        notifyError(msg);
+        setIsCheckoutSubmit(false);
+        return;
       }
 
       // Calculate final total at submit time to ensure accuracy

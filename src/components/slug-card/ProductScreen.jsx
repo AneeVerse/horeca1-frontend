@@ -27,13 +27,44 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Fragment, useState, useEffect, useContext } from "react";
 import { useCart } from "react-use-cart";
 import { SidebarContext } from "@context/SidebarContext";
+import { notifyError } from "@utils/toast";
 
 const ProductScreen = ({ product, reviews, attributes, relatedProducts }) => {
   const { globalSetting, storeCustomization } = useSetting();
   const { showingTranslateValue } = useUtilsFunction();
   const currency = globalSetting?.default_currency || "₹";
   const { item, setItem } = useAddToCart();
-  const { addItem } = useCart();
+  const { addItem, items: cartItems } = useCart();
+
+  // Returns how many of a given cart-id the user already has in their cart.
+  // Bulk buttons create separate cart lines (e.g. id-bulk1, id-bulk2, id-promo)
+  // so we look up the exact line, not the base product.
+  const getExistingCartQty = (cartId) => {
+    const existing = cartItems?.find((i) => i.id === cartId);
+    return existing?.quantity || 0;
+  };
+
+  // Common stock guard for every "Add X" button. Returns true if the add is
+  // allowed, and shows an error toast + returns false otherwise.
+  const canAddBulk = (requestedQty, cartId) => {
+    const availableStock = Number(product?.stock) || 0;
+    const alreadyInCart = getExistingCartQty(cartId);
+    // Also account for the base-product line (single add) consuming stock.
+    const baseLineQty = getExistingCartQty(`${product._id}`);
+    const totalRequested = alreadyInCart + baseLineQty + requestedQty;
+
+    if (availableStock <= 0) {
+      notifyError("This product is currently out of stock.");
+      return false;
+    }
+    if (totalRequested > availableStock) {
+      notifyError(
+        `Only ${availableStock} in stock. You already have ${alreadyInCart + baseLineQty} in cart.`
+      );
+      return false;
+    }
+    return true;
+  };
   const { setCartDrawerOpen } = useContext(SidebarContext);
   const [isPromoTime, setIsPromoTime] = useState(false);
 
@@ -203,10 +234,12 @@ const ProductScreen = ({ product, reviews, attributes, relatedProducts }) => {
                       <button
                         onClick={() => {
                           const bulkQuantity = product.bulkPricing.bulkRate1.quantity;
+                          const bulkId = `${product._id}-bulk1`;
+                          if (!canAddBulk(bulkQuantity, bulkId)) return;
                           const bulkItem = {
                             ...product,
                             title: showingTranslateValue(product?.title),
-                            id: `${product._id}-bulk1`,
+                            id: bulkId,
                             variant: product.prices,
                             price: product.bulkPricing.bulkRate1.pricePerUnit,
                             originalPrice: product.prices?.originalPrice,
@@ -232,10 +265,12 @@ const ProductScreen = ({ product, reviews, attributes, relatedProducts }) => {
                       <button
                         onClick={() => {
                           const bulkQuantity = product.bulkPricing.bulkRate2.quantity;
+                          const bulkId = `${product._id}-bulk2`;
+                          if (!canAddBulk(bulkQuantity, bulkId)) return;
                           const bulkItem = {
                             ...product,
                             title: showingTranslateValue(product?.title),
-                            id: `${product._id}-bulk2`,
+                            id: bulkId,
                             variant: product.prices,
                             price: product.bulkPricing.bulkRate2.pricePerUnit,
                             originalPrice: product.prices?.originalPrice,
@@ -273,10 +308,12 @@ const ProductScreen = ({ product, reviews, attributes, relatedProducts }) => {
                         <button
                           onClick={() => {
                             const promoQuantity = product.promoPricing.bulkRate1.quantity;
+                            const promoId = `${product._id}-promo-bulk1`;
+                            if (!canAddBulk(promoQuantity, promoId)) return;
                             const promoItem = {
                               ...product,
                               title: showingTranslateValue(product?.title),
-                              id: `${product._id}-promo-bulk1`,
+                              id: promoId,
                               variant: product.prices,
                               price: product.promoPricing.bulkRate1.pricePerUnit,
                               originalPrice: product.prices?.originalPrice,
@@ -304,10 +341,12 @@ const ProductScreen = ({ product, reviews, attributes, relatedProducts }) => {
                         <button
                           onClick={() => {
                             const promoQuantity = product.promoPricing.bulkRate2.quantity;
+                            const promoId = `${product._id}-promo-bulk2`;
+                            if (!canAddBulk(promoQuantity, promoId)) return;
                             const promoItem = {
                               ...product,
                               title: showingTranslateValue(product?.title),
-                              id: `${product._id}-promo-bulk2`,
+                              id: promoId,
                               variant: product.prices,
                               price: product.promoPricing.bulkRate2.pricePerUnit,
                               originalPrice: product.prices?.originalPrice,
@@ -388,10 +427,12 @@ const ProductScreen = ({ product, reviews, attributes, relatedProducts }) => {
                       onClick={() => {
                         // Use promo pricing if promo time and promo pricing exists
                         if (isPromoTime && product?.promoPricing?.singleUnit > 0 && product?.variants?.length === 0) {
+                          const promoId = `${product._id}-promo`;
+                          if (!canAddBulk(item, promoId)) return;
                           const promoItem = {
                             ...product,
                             title: showingTranslateValue(product?.title),
-                            id: `${product._id}-promo`,
+                            id: promoId,
                             variant: product.prices,
                             price: product.promoPricing.singleUnit,
                             originalPrice: product.prices?.originalPrice,
