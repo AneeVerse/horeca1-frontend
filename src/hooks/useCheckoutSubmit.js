@@ -190,35 +190,29 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
         return;
       }
 
-      // Pincode serviceability check. If the allowlist isn't present in
-      // localStorage we previously skipped this entirely, letting unserviceable
-      // orders slip through. Treat missing allowlist as "unknown" and block,
-      // rather than assume-serviceable.
+      // Pincode serviceability check (BEST-EFFORT, original behaviour).
+      // Only validates against an allowlist IF that allowlist is present in
+      // localStorage. If it's missing or malformed, we silently skip — never
+      // block an order on the absence of the allowlist itself.
       const pincode = cleanZip;
       const storedPincodes = typeof window !== 'undefined' ? localStorage.getItem("deliveryPincodes") : null;
-      if (!storedPincodes) {
-        const msg = "We couldn't verify delivery to your PIN code right now. Please refresh the page and try again.";
-        setError(msg);
-        notifyError(msg);
-        setIsCheckoutSubmit(false);
-        return;
-      }
-      try {
-        const allowedPincodes = JSON.parse(storedPincodes);
-        const isServiceable = Array.isArray(allowedPincodes) && allowedPincodes.some(p => p.pincode === pincode);
-        if (!isServiceable) {
-          const msg = "Sorry currently we do not have service in your pincode. Hope to serve you soon";
-          setError(msg);
-          notifyError(msg);
-          setIsCheckoutSubmit(false);
-          return;
+      if (storedPincodes) {
+        try {
+          const allowedPincodes = JSON.parse(storedPincodes);
+          if (Array.isArray(allowedPincodes) && allowedPincodes.length > 0) {
+            const isServiceable = allowedPincodes.some(p => p.pincode === pincode);
+            if (!isServiceable) {
+              const msg = "Sorry currently we do not have service in your pincode. Hope to serve you soon";
+              setError(msg);
+              notifyError(msg);
+              setIsCheckoutSubmit(false);
+              return;
+            }
+          }
+        } catch (e) {
+          // Corrupt allowlist — log and proceed rather than block the order.
+          console.warn("[Checkout] deliveryPincodes is malformed, skipping serviceability check:", e?.message);
         }
-      } catch (e) {
-        const msg = "We couldn't verify delivery to your PIN code right now. Please refresh the page and try again.";
-        setError(msg);
-        notifyError(msg);
-        setIsCheckoutSubmit(false);
-        return;
       }
 
       // Calculate final total at submit time to ensure accuracy
