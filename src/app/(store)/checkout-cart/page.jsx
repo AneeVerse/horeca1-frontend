@@ -1,6 +1,9 @@
 import CheckoutCartScreen from "@components/checkout/CheckoutCartScreen";
 import React from "react";
 
+// Allow up to 5 min for payment Server Actions (Vercel Pro max)
+export const maxDuration = 300;
+
 export const metadata = {
   title: "Checkout Cart | Horeca1",
   description:

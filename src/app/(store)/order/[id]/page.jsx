@@ -2,6 +2,9 @@ import { getOrderById } from "@services/OrderServices";
 import DownloadPrintButton from "@components/invoice/DownloadPrintButton";
 import { getStoreCustomizationSetting } from "@services/SettingServices";
 
+// Allow up to 5 min for Server Actions (Vercel Pro max)
+export const maxDuration = 300;
+
 const Order = async ({ params }) => {
   const { id } = await params;
   const { data, error } = await getOrderById({ id });
