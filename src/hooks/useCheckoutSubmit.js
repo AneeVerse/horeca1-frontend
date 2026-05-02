@@ -266,12 +266,7 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
         quantity: item.quantity,
       }));
       console.log("[Checkout] Cart items structure:", cartItemsDebug);
-
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'useCheckoutSubmit.js:163', message: 'Cart items before order creation', data: { cartItems: cartItemsDebug, itemsCount: items.length }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'C' }) }).catch(() => { });
-      // #endregion
-
-      let orderInfo = {
+let orderInfo = {
         user_info: userDetails,
         shippingOption: data.shippingOption,
         paymentMethod: data.paymentMethod,
@@ -287,26 +282,12 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
 
       // Get customer ID - check both id and _id
       const customerId = userInfo?.id || userInfo?._id;
-
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'useCheckoutSubmit.js:186', message: 'Profile update attempt', data: { customerId, userInfo: userInfo ? { id: userInfo.id, _id: userInfo._id, phone: userInfo.phone } : null, userDetails }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'B' }) }).catch(() => { });
-      // #endregion
-
-      if (customerId) {
-        // #region agent log
-        fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'useCheckoutSubmit.js:190', message: 'Calling addShippingAddress API', data: { customerId, userDetails }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'A' }) }).catch(() => { });
-        // #endregion
-
-        try {
+if (customerId) {
+try {
           // Call backend API directly to update shipping address and profile
           const session = await getUserSession();
           const token = userInfo?.token || session?.user?.token;
-
-          // #region agent log
-          fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'useCheckoutSubmit.js:203', message: 'Making API call to update profile', data: { customerId, userDetails, hasToken: !!token }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'A' }) }).catch(() => { });
-          // #endregion
-
-          // Construct strictly validated address data for the API (excluding email to match schema)
+// Construct strictly validated address data for the API (excluding email to match schema)
           const addressData = {
             name: data.lastName ? `${data.firstName} ${data.lastName}`.trim() : (data.firstName || "").trim(),
             contact: data.contact.replace(/\D/g, ""), // formatted phone - strictly numeric
@@ -335,12 +316,7 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
           );
 
           const result = await response.json();
-
-          // #region agent log
-          fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'useCheckoutSubmit.js:218', message: 'addShippingAddress API result', data: { result, status: response.status, ok: response.ok }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'A' }) }).catch(() => { });
-          // #endregion
-
-          if (!response.ok) {
+if (!response.ok) {
             console.error("[Checkout] Failed to update shipping address:", result);
           } else {
             console.log("[Checkout] Profile updated successfully:", result);
@@ -355,12 +331,7 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
                 phone: result.customer?.phone || userInfo?.phone,
               };
               Cookies.set("userInfo", JSON.stringify(updatedUserInfo), getCookieOptions(30));
-
-              // #region agent log
-              fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'useCheckoutSubmit.js:236', message: 'Updated userInfo cookie', data: { updatedUserInfo, result }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'A' }) }).catch(() => { });
-              // #endregion
-
-              // Dispatch update to UserContext to refresh UI
+// Dispatch update to UserContext to refresh UI
               dispatch({ type: "USER_LOGIN", payload: updatedUserInfo });
 
               // Dispatch custom event to notify Sidebar and other components
@@ -370,16 +341,10 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
             }
           }
         } catch (err) {
-          // #region agent log
-          fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'useCheckoutSubmit.js:228', message: 'addShippingAddress API error', data: { error: err.message, stack: err.stack }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'A' }) }).catch(() => { });
-          // #endregion
-          console.error("[Checkout] Error updating shipping address:", err);
+console.error("[Checkout] Error updating shipping address:", err);
         }
       } else {
-        // #region agent log
-        fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'useCheckoutSubmit.js:223', message: 'No customer ID found', data: { userInfo }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'B' }) }).catch(() => { });
-        // #endregion
-        console.warn("[Checkout] No customer ID found in userInfo:", userInfo);
+console.warn("[Checkout] No customer ID found in userInfo:", userInfo);
       }
 
       // Handle payment based on method
@@ -677,22 +642,45 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
               razorpayPaymentId: razorpayDetails.razorpayPaymentId,
             });
 
-            const { orderResponse, error } = await addRazorpayOrder(orderData);
+            // Retry addRazorpayOrder up to 3 times — transient backend errors
+            // (cold start, DB reconnect) are the #1 cause of lost orders.
+            let orderResponse = null;
+            let lastError = null;
+            const MAX_RETRIES = 3;
+            for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+              try {
+                console.log(`[Frontend Razorpay] addRazorpayOrder attempt ${attempt}/${MAX_RETRIES}`);
+                const result = await addRazorpayOrder(orderData);
+                orderResponse = result.orderResponse;
+                lastError = result.error;
+                if (orderResponse && !lastError) break; // success
+                console.warn(`[Frontend Razorpay] Attempt ${attempt} failed:`, lastError);
+              } catch (retryErr) {
+                lastError = retryErr.message || retryErr;
+                console.warn(`[Frontend Razorpay] Attempt ${attempt} threw:`, lastError);
+              }
+              if (attempt < MAX_RETRIES) {
+                console.log(`[Frontend Razorpay] Waiting 2s before retry...`);
+                await new Promise(r => setTimeout(r, 2000));
+              }
+            }
 
-            console.log("[Frontend Razorpay] addRazorpayOrder result:", {
+            console.log("[Frontend Razorpay] addRazorpayOrder final result:", {
               success: !!orderResponse,
-              error: error,
+              error: lastError,
               orderId: orderResponse?._id,
               invoice: orderResponse?.invoice,
             });
 
-            if (error || !orderResponse) {
-              console.error("[Frontend Razorpay] CRITICAL: Payment captured but order creation failed!");
-              console.error("[Frontend Razorpay] Error:", error);
+            if (lastError || !orderResponse) {
+              console.error("[Frontend Razorpay] CRITICAL: Payment captured but order creation failed after retries!");
+              console.error("[Frontend Razorpay] Error:", lastError);
               console.error("[Frontend Razorpay] Payment ID:", response.razorpay_payment_id);
-              console.error("[Frontend Razorpay] Please create order manually for this payment.");
               setIsCheckoutSubmit(false);
-              return notifyError(error || "Order creation failed. Please contact support with Payment ID: " + response.razorpay_payment_id);
+              return notifyError(
+                "Your payment was received! Your order will appear in 'My Orders' within a few minutes. " +
+                "If not, please contact support with Payment ID: " + response.razorpay_payment_id
+              );
             }
 
             console.log("[Frontend Razorpay] Order created successfully, invoice:", orderResponse.invoice);
@@ -702,7 +690,10 @@ const useCheckoutSubmit = ({ shippingAddress }) => {
             console.error("[Frontend Razorpay] Error:", handlerError.message);
             console.error("[Frontend Razorpay] Payment ID:", response.razorpay_payment_id);
             setIsCheckoutSubmit(false);
-            notifyError("Order processing failed. Please contact support with Payment ID: " + response.razorpay_payment_id);
+            notifyError(
+              "Your payment was received! Your order will appear in 'My Orders' within a few minutes. " +
+              "If not, please contact support with Payment ID: " + response.razorpay_payment_id
+            );
           }
         },
         prefill: {

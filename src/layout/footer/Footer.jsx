@@ -16,17 +16,7 @@ const Footer = ({ error, storeCustomizationSetting }) => {
   const isHomePage = pathname === "/";
   const footer = storeCustomizationSetting?.footer;
   const footerRef = useRef(null);
-
-  // #region agent log
-  useEffect(() => {
-    if (isHomePage && footerRef.current) {
-      const computedStyle = window.getComputedStyle(footerRef.current);
-      fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'Footer.jsx:useEffect', message: 'Footer container styles', data: { display: computedStyle.display, flexDirection: computedStyle.flexDirection, width: computedStyle.width, children: footerRef.current.children.length }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'A' }) }).catch(() => { });
-    }
-  }, [isHomePage]);
-  // #endregion
-
-  return (
+return (
     <div className={`${isHomePage ? 'bg-primary-500 pb-[68px] sm:pb-8' : 'bg-gradient-to-b from-primary-50 to-white pb-20 lg:pb-8'}`}>
       {/* Hero Logo Section */}
       <div className="bg-primary-500 py-4 md:py-5 lg:py-6">

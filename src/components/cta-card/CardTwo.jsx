@@ -11,16 +11,7 @@ const CardTwo = async ({}) => {
   const { storeCustomizationSetting, error } =
     await getStoreCustomizationSetting();
   const home = storeCustomizationSetting?.home;
-  
-  // #region agent log
-  if (typeof window !== 'undefined') {
-    const quickDeliverySubtitle = home?.quick_delivery_subtitle?.en;
-    const quickDeliveryDescription = home?.quick_delivery_description?.en;
-    fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'store/src/components/cta-card/CardTwo.jsx:14',message:'CardTwo received storeCustomizationSetting',data:{quickDeliverySubtitle,quickDeliveryDescription,hasHome:!!home},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-  }
-  // #endregion
-  
-  return (
+return (
     <div className="w-full bg-white shadow-sm lg:px-10 lg:py-5 p-6 rounded-lg">
       <div className="flex justify-between items-center">
         <div className="lg:w-3/5">

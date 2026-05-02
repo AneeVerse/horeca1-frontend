@@ -19,33 +19,21 @@ export const getBanners = async () => {
 
 // Get all banners for admin (including inactive)
 export const getAllBannersAdmin = async () => {
-  // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'BannerService.js:getAllBannersAdmin',message:'getAllBannersAdmin called',data:{baseURL:typeof baseURL !== 'undefined' ? baseURL : 'undefined',hasAdminToken:!!localStorage.getItem("adminToken")},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H'})}).catch(()=>{});
-  // #endregion
-  try {
+try {
     const adminToken = localStorage.getItem("adminToken");
     if (!adminToken) {
       throw new Error("Admin authentication required. Please login.");
     }
     
     const apiUrl = `${baseURL}/banners/admin`;
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'BannerService.js:getAllBannersAdmin',message:'Making API request',data:{apiUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'I'})}).catch(()=>{});
-    // #endregion
-    
-    const response = await fetch(apiUrl, {
+const response = await fetch(apiUrl, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${adminToken}`,
       },
       cache: "no-store",
     });
-    
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'BannerService.js:getAllBannersAdmin',message:'Response received',data:{status:response.status,statusText:response.statusText,ok:response.ok,contentType:response.headers.get("content-type"),url:response.url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'J'})}).catch(()=>{});
-    // #endregion
-    
-    if (!response.ok) {
+if (!response.ok) {
       // Read response body only once
       const contentType = response.headers.get("content-type");
       let errorMessage = "Failed to fetch banners";
@@ -76,21 +64,14 @@ export const getAllBannersAdmin = async () => {
 
 // Add a new banner
 export const addBanner = async (bannerData) => {
-  // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'BannerService.js:addBanner',message:'addBanner called',data:{hasAdminToken:!!localStorage.getItem("adminToken"),baseURL:typeof baseURL !== 'undefined' ? baseURL : 'undefined',bannerDataKeys:Object.keys(bannerData)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
-  try {
+try {
     const adminToken = localStorage.getItem("adminToken");
     if (!adminToken) {
       throw new Error("Admin authentication required");
     }
     
     const apiUrl = `${baseURL}/banners/admin`;
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'BannerService.js:addBanner',message:'Making API request',data:{apiUrl,method:'POST',hasToken:!!adminToken},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
-    
-    const response = await fetch(apiUrl, {
+const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -98,12 +79,7 @@ export const addBanner = async (bannerData) => {
       },
       body: JSON.stringify(bannerData),
     });
-    
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'BannerService.js:addBanner',message:'Response received',data:{status:response.status,statusText:response.statusText,ok:response.ok,contentType:response.headers.get("content-type"),url:response.url},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
-    
-    if (!response.ok) {
+if (!response.ok) {
       // Read response body only once
       const contentType = response.headers.get("content-type");
       let errorMessage = "Failed to add banner";
@@ -112,15 +88,9 @@ export const addBanner = async (bannerData) => {
       if (contentType && contentType.includes("application/json")) {
         errorBody = await response.json();
         errorMessage = errorBody.message || errorMessage;
-        // #region agent log
-        fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'BannerService.js:addBanner',message:'Error response JSON',data:{status:response.status,errorBody},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
-      } else {
+} else {
         const errorText = await response.text();
-        // #region agent log
-        fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'BannerService.js:addBanner',message:'Error response text',data:{status:response.status,contentType,errorTextPreview:errorText.substring(0,200)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-        // #endregion
-        if (response.status === 404) {
+if (response.status === 404) {
           errorMessage = "Banner API endpoint not found. Please check backend server.";
         } else if (response.status === 401) {
           errorMessage = "Authentication failed. Please login again.";
@@ -131,15 +101,9 @@ export const addBanner = async (bannerData) => {
       throw new Error(errorMessage);
     }
     const result = await response.json();
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'BannerService.js:addBanner',message:'Success',data:{result},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
-    // #endregion
-    return result;
+return result;
   } catch (error) {
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'BannerService.js:addBanner',message:'Exception caught',data:{errorMessage:error.message,errorName:error.name,errorStack:error.stack?.substring(0,500)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'G'})}).catch(()=>{});
-    // #endregion
-    console.error("Error adding banner:", error);
+console.error("Error adding banner:", error);
     throw error;
   }
 };

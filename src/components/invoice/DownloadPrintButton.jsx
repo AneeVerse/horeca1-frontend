@@ -76,10 +76,7 @@ const DownloadPrintButton = ({ data }) => {
       a.style.position = 'fixed';
       a.style.top = '-9999px';
       document.body.appendChild(a);
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'DownloadPrintButton.jsx:handleMobileDownload',message:'Triggering mobile download',data:{isMobile,hasNavigatorShare:!!navigator.share,fileName,userAgent:navigator.userAgent},timestamp:Date.now(),sessionId:'debug-session',runId:'mobile-download',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
-      // Use both click and programmatic trigger for better mobile support
+// Use both click and programmatic trigger for better mobile support
       a.click();
       // Also trigger programmatically after a small delay
       setTimeout(() => {
@@ -95,24 +92,11 @@ const DownloadPrintButton = ({ data }) => {
       }, 1000);
     } catch (error) {
       console.error("Error with mobile download:", error);
-      // #region agent log
-      fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'DownloadPrintButton.jsx:handleMobileDownload',message:'Mobile download error',data:{error:error.message,stack:error.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'mobile-download-error',hypothesisId:'B'})}).catch(()=>{});
-      // #endregion
-    } finally {
+} finally {
       setDownloadLoading(false);
     }
   };
-
-
-  // #region agent log
-  useEffect(() => {
-    if (isClient) {
-      fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'DownloadPrintButton.jsx:useEffect',message:'Component mounted',data:{isClient,isMobile,hasData:!!data},timestamp:Date.now(),sessionId:'debug-session',runId:'mount',hypothesisId:'C'})}).catch(()=>{});
-    }
-  }, [isClient, isMobile, data]);
-  // #endregion
-
-  return (
+return (
     <>
       <div className="bg-emerald-100 rounded-md mb-5 px-4 py-3">
         <label>

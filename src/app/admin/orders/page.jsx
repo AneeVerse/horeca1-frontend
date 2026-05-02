@@ -415,10 +415,7 @@ export default function OrdersPage() {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {(() => {
-                        // #region agent log
-                        fetch('http://127.0.0.1:7243/ingest/7c8b8306-06cf-4e61-b56f-4a46c890ce31', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'admin/orders/page.jsx:268', message: 'Rendering order cart items', data: { orderId: order._id, cartLength: order.cart?.length, cartItems: order.cart?.map(i => ({ id: i.id, title: i.title, sku: i.sku, hsn: i.hsn, unit: i.unit, brand: i.brand })) }, timestamp: Date.now(), sessionId: 'debug-session', runId: 'run1', hypothesisId: 'E' }) }).catch(() => { });
-                        // #endregion
-                        return order.cart?.map((item, idx) => (
+return order.cart?.map((item, idx) => (
                           <tr key={idx}>
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-3">
